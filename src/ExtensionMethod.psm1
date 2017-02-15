@@ -6,28 +6,7 @@
 #D'après une idée de Bart De Smet's :
 # http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx
 #
-
-#todo UncommonSense.PowerShell.TypeData
-#todo
-#v3 Update-Type
-#   $List_String = new-object 'Collections.Generic.List[String]'
-#   $List_Int = new-object 'Collections.Generic.List[Int]'
-#
-#   ,$List_String|gm -MemberType scriptmethod
-#   ,$List_Int|gm -MemberType scriptmethod
-#
-#   $TypeFullname=$List_String.GetType().Fullname
-#   Update-TypeData -TypeName $TypeFullname -MemberType ScriptMethod  -MemberName MyMethod -Value {
-#    Param(
-#      [Object[]] $ArgumentList
-#    )
-#     Write-host "MyMethod $ArgumentList"
-#   }
-#
-#   ,$List_String|gm -MemberType scriptmethod
-#   ,$List_Int|gm -MemberType scriptmethod
-#
-#   Ici seule la classe Collections.Generic.List[String] possédera la méthode nommée 'MyMethod'.
+#doc: https://msdn.microsoft.com/en-us/library/dd878306(v=vs.85).aspx
 
 
 #<DEFINE %DEBUG%>
@@ -43,7 +22,6 @@ $Params=@{
 &$InitializeLogging @Params
 #<UNDEF %DEBUG%>
 
-
  #Liste des raccourcis de type
  #ATTENTION ne pas utiliser dans la déclaration d'un type de paramètre d'une fonction
 $ExtensionMethodShortCut=@{}
@@ -51,7 +29,7 @@ $ExtensionMethodShortCut=@{}
 $AcceleratorsType= [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators")
 
 Try {
-    $ExtensionMethodShortCut.GetEnumerator()| Foreach {
+    $ExtensionMethodShortCut.GetEnumerator()| Foreach-Object {
    Try {
      $AcceleratorsType::Add($_.Key,$_.Value)
    } Catch [System.Management.Automation.MethodInvocationException]{
@@ -63,40 +41,39 @@ Try {
 }
 
 function Find-ExtensionMethod{
- param(
-    [ValidateNotNull()]
-    [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-   [System.Type] $Type,
-   [switch] $ExcludeGeneric
- )
- #Recherche et renvoi les méthodes d'extension contenu par le type $Types.
-  #
+  #Recherche et renvoi les méthodes d'extension contenu dans le type $Type.
   #On ne traite que les méthodes statiques publiques des types qui sont scéllés, non-générique et non-imbriqués.
   # Spec C# 3.0 :
   #   Lorsque le premier paramètre d'une méthode inclut le modificateur this, la méthode est dite méthode d'extension.
   #   Les méthodes d'extension ne peuvent être déclarées que dans des classes statiques non génériques non imbriquées.
   #   Le premier paramètre d'une méthode d'extension ne peut pas comporter de modificateurs autres que this, et le type
   #   de paramètre ne peut être un type pointeur.
-  #
-  # $ExcludeGeneric :  Ne renvoi pas les méthodes d'extension des types génériques, car ces types nécessiteraient,
-  #                    dans le fichier ps1xml, une déclaration pour chaque type utilisé lors du paramètrage de la classe :
-  #                     MyClass<String>, MyClass<Int>, etc
-  #
-  # Add-Type -path "$Path\$AssemblyName.dll" -Pass|GetExtensionMethods -ExcludeGeneric
+
+ param(
+    [ValidateNotNull()]
+    [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+   [System.Type] $Type,
+
+     #Ne renvoi pas les méthodes d'extension des types génériques, car ces types nécessiteraient,
+     #dans le fichier ps1xml, une déclaration pour chaque type utilisé lors du paramètrage de la classe :
+     #  Class<String>, MyClass<Int>, etc
+     # Add-Type -path "$Path\$AssemblyName.dll" -Pass|GetExtensionMethods -ExcludeGeneric
+   [switch] $ExcludeGeneric
+ )
 
   process {
      #Filtre les types publics qui sont scéllés, non-générique et non-imbriqués.
      #Les classes statiques possédent les attributs abstract et Sealed, ce dernier est placé sur
      # le type lors de la compilation (il n'est pas déclaré dans le code source)
    $Type|
-    where {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
-    Foreach {
+    Where-Object {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
+    Foreach-Object {
         #recherche uniquement les méthodes statique publiques
        $_.GetMethods(([System.Reflection.BindingFlags]"Static,Public"))|
          #Filtre les méthodes d'extension.
          # Note: en C# l'attribut ExtensionAttribute est défini par le compilateur.
-        Where {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}|
-        Foreach {
+        Where-Object {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}|
+        Foreach-Object {
            #on renvoi toutes les méthodes
           if ($ExcludeGeneric -eq $False)
            {$_}
@@ -108,38 +85,40 @@ function Find-ExtensionMethod{
   }
 } #Find-ExtensionMethod
 
-function Test-ClassExtensionMethods([System.Type] $Type)
+function Test-ClassExtensionMethod([System.Type] $Type)
 { #Détermine si le type $Type contient des méthodes d'extension.
   #
   @($Type|
-    where {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
-    Foreach {
+    Where-Object {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
+    Foreach-Object {
        $_.GetMethods(([System.Reflection.BindingFlags]"Static,Public"))|
-        Where {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}
+        Where-Object {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}
     }).count -gt 0
-}#Test-ClassExtensionMethods
+}#Test-ClassExtensionMethod
 
 function Get-ExtensionMethodInfo{
+  #Renvoi, à partir d'informations d'une méthode d'extension, un objet DictionaryEntry dont :
+  #       la clé est le type du premier paramètre, déclaré dans la signature de la méthode (le type peut être une type imbriqué),
+  #       la valeur est une méthode d'extension rattachée à ce même type.
   Param (
      [ValidateNotNull()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
     [System.Reflection.MethodInfo] $MethodInfo,
+
+      #todo : redondant si Find-ExtensionMethod -ExcludeGeneric  ?
+
+      # $ExcludeGeneric :  Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type générique,
+      #                    car le nom de la méthode nécessiterait, dans le fichier ps1xml, une déclaration pour chaque type
+      #                    utilisé lors du paramètrage de la méthode :
+      #                      MyClass.MaMethod<DateTimefull strong name ...>, MyClass.MaMethod<Double full strong name ...>, etc
     [switch] $ExcludeGeneric,
+
+      # $ExcludeInterface : Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type interface.
+      #                     PowerShell v2 ne sait pas 'extraire' une interface particulière à partir d'un objet.
+      #                     De plus les objets de type IEnumerable sont transformés en System.Array par PowerShell...
     [switch] $ExcludeInterface
   )
 
-  #On renvoi, à partir d'informations d'une méthode d'extension, un objet DictionaryEntry dont :
-  #       la clé est le type du premier paramètre, déclaré dans la signature de la méthode (le type peut être une type imbriqué),
-  #       la valeur est une méthode d'extension rattachée à ce même type.
-  #
-  # $ExcludeGeneric :  Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type générique,
-  #                    car le nom de la méthode nécessiterait, dans le fichier ps1xml, une déclaration pour chaque type
-  #                    utilisé lors du paramètrage de la méthode :
-  #                      MyClass.MaMethod<DateTimefull strong name ...>, MyClass.MaMethod<Double full strong name ...>, etc
-  #
-  # $ExcludeInterface : Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type interface.
-  #                     PowerShell v2 ne sait pas 'extraire' une interface particulière à partir d'un objet.
-  #                     De plus les objets de type IEnumerable sont transformés en System.Array par PowerShell...
  process {
      #Le premier paramètre de la méthode détermine le type sur lequel on déclare la méthode d'extension.
      #En C# c'est le rôle du mot clé 'this'.
@@ -172,6 +151,8 @@ function Get-ExtensionMethodInfo{
 } #Get-ExtensionMethodInfo
 
 Function New-HashTable {
+   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
+                                                    Justification="New-HashTable do not change the system state.")]
 #From http://blogs.msdn.com/b/powershell/archive/2007/11/27/new-hashtable.aspx
 # Author:   laurent Dardenne (ajout $Value)
 # Version:  0.2
@@ -223,178 +204,37 @@ param(
 }#New-HashTable
 
 function Format-TableExtensionMethod{
- #Affiche sur la console la liste des méthodes d'extension regroupées par type.
+ #Affiche sur la console, à partir d'une hashtable, la liste des méthodes d'extension regroupées par type.
  #Wrapper spécialisé du cmdlet Format-Table.
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+     #Contient des méthodes d'extension reroupées par nom de type.
     [System.Collections.HashTable] $Hashtable
  )
-#
-#Hashtable : Hashtable contenant les méthodes d'extension.
+
 $Hashtable.GetEnumerator()|
- Foreach {
+ Foreach-Object {
    $InstanceType=$_.Key;$_.Value|
-    Sort $_.ParameterCount|
+    Sort-Object $_.ParameterCount|
     Add-Member NoteProperty InstanceType $InstanceType -pass
  }|
  Format-Table @{Label="Method";Expression={ $_.ToString()}} -GroupBy InstanceType
 }#Format-TableExtensionMethod
 
 
-# Function New-ExtensionMethodTypeData{
-# #Renvoi un texte représentant une structure XML à insérer dans un fichier .ps1xml
-#  [CmdletBinding()]
-#  param(
-#     [ValidateNotNull()]
-#     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-#   [System.Collections.HashTable] $Datas,
-
-#   [switch] $Split
-#  )
-# #$Datas :
-# #         Hashtable contenant les méthodes d'extension d'une ou plusieurs classes,
-# #          on crée une seule définition de type pour toutes les classes.
-# #         DictionaryEntry contenant les méthodes d'extension d'une classe,
-# #          on crée une définition de type par classe.
-
-
-# #Pour chaque type, on crée autant de balise <ScriptMethod> que de méthodes recensées.
-# #Comme chaque méthode peut être surchargée,  on doit considérer le type de la surcharge,
-# # par le nombre de paramètres et par leurs types :
-# #
-# #  1- public static string To(this SubStringFrom subStringFrom)
-# #  2- public static string To(this SubStringFrom subStringFrom, int end)
-# #  3- public static string To(this SubStringFrom subStringFrom, string end)
-# #  4- public static string To(this SubStringFrom subStringFrom, string end, bool includeBoundary)
-# #
-# #On teste le nombre de paramètres pour générer la balise script qui contient le code PowerShell :
-# #         <Script>
-# # 						switch ($args.Count) {
-# #            			0 { [Developpez.Dotnet.StringExtensions]::To($this)}
-# # 	 							1 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0])}
-# # 	 							2 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0] ,$args[1])}
-# # 	          default { throw "La méthode To ne propose pas de signature contenant $($args.Count) paramètres." }
-# #           }
-# #         </Script>
-# #
-# # Dans cet exemple, pour $args.Count = 1 (on ne compte pas $this) on ne doit générer qu'une seule ligne,
-# #on laisse le shell invoquer la méthode.
-# #Si le nombre de paramètres correspond, mais pas leurs type alors le shell déclenchera une exception.
-# Begin {
-#   $Header=@"
-# <?xml version="1.0" encoding="utf-8"?>
-#  <Types>
-# "@
-#     $_Body=@'
-#    <Type>
-#     <Name>$CurrentType</Name>
-#     <Members>
-# '@
-
-#   $CloseClass=@"
-#      </Members>
-#    </Type>
-# "@
-
-#   $Footer=@"
-#  </Types>
-# "@
-# }
-#  process {
-#   $isAllClasses=-not $PSBoundParameters.ContainsKey('Split')
-#    Write-Debug "isAllClasses : $isAllClasses"
-#   if ($isAllClasses)
-#   { $Classes=$Datas.GetEnumerator() }
-#   else
-#   { $Classes=$Datas }
-
-
-#   Write-Debug "Write `$Header"
-#   Write-Output $Header
-
-#    #Pour chaque type (classe/struct)
-#   $Classes|
-#    Foreach {
-#     $CurrentType=$_.Key
-#     $Body=$ExecutionContext.InvokeCommand.ExpandString($_Body)
-
-#     if ($isAllClasses) { Write-Debug "Write `$Body"; Write-Output $Body }
-#     $_.Value| Group Name |
-#       #Pour chaque groupe de méthodes du type courant
-#       #Utilise une Here-String imbriquées
-#     Foreach {
-#       #Peut provoquer des appels récursifs fatal, par exemple sur System.Object
-#      if ( $_.Name -eq 'ToString')
-#      {Write-Warning "Excluded method : $CurrentType.ToString"}
-#      else
-#      {
-#       Write-Debug "`tWrite ScriptMethod"
-# @"
-
-#       <ScriptMethod>
-#         <Name>$($_.Name)</Name>
-#         <Script>
-# $("`t"*6)switch (`$args.Count) {
-#            $(
-#              $_.group|
-#                 #Pour faciliter le tri on ajoute un membre contenant le nombre de paramètre de la méthode.
-#               Add-member ScriptProperty ParameterCount -value {$this.GetParameters().Count} -Force -pass|
-#                 #On ne crée qu'une seule ligne pour les méthodes surchargées utilisant un nombre identique de paramètres.
-#                 #Exemple :
-#                 #  public static SubStringFrom From(this string s, int start);
-#                 #  public static SubStringFrom From(this string s, string start);
-#                 #Dans ce cas leurs types est différent, ce qui ne pose pas de pb car PowerShell est non typé.
-#                 #
-#               Sort ParameterCount -unique|
-#               foreach {
-#                $Count=$_.GetParameters().Count
-#                  #On soustrait 1 à $Count pour créer un décalage :
-#                  #    0 =$this                   -> $Objet.Method()
-#                  #    1=$this,$args[0]           -> $Objet.Method($Param1)
-#                  #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)
-#                  #
-#                  # Le décalage sur le nombre de paramètres est dû au fait que l'on doit prendre en charge
-#                  # le modificateur C# this, qui est égal à $this dans un script de méthode PowerShell, celui-ci
-#                  # n'est pas précisé lors de l'appel de la méthode PowerShell.
-#                  #
-#                  #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
-#                  #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
-# @"
-# $("`t"*7)$($Count-1) { [$($_.Declaringtype)]::$($_.Name)(`$this$(
-#               "$(if ($Count -gt 1){1..($Count-1)|Foreach {",`$args[$($_-1)]"}})"))}`r`n`t
-# "@
-#               }
-#            )
-#             default { throw "La méthode $($_.Name) ne propose pas de signature contenant `$(`$args.Count) paramètres." }
-#           }
-#         </Script>
-#       </ScriptMethod>
-# "@
-#     } #else
-#   } #foreach  methods
-
-#   if ($isAllClasses) { Write-Debug "Write `$CloseClass"; Write-Output $CloseClass }
-#   }#foreach  Class
-
-#  if ($isAllClasses)
-#  { Write-Debug "Write `$Footer";Write-Output $Footer }
-#  else
-#  { Write-Debug "Write `$ALL";Write-Output @($Header;$Body;$CloseClass;$Footer) }
-#  } #process
-# } #New-ExtensionMethodTypeData
-
-
 Function New-ExtensionMethodType{
-#Renvoi un ou des objets contenant la définition d'un type ETS  déclacrant ou ou plusieus membre de type ScritpMethod
+ [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
+                                                    Justification="New-ExtensionMethodType  do not change the system state.")]
+
+#Renvoi un ou des objets contenant la définition d'un type ETS déclarant ou ou plusieus membre de type ScritpMethod
  [CmdletBinding()]
- [OutputType([UncommonSense.PowerShell.TypeData.Type[]])]
  [OutputType([UncommonSense.PowerShell.TypeData.Type])]
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-   # Hashtable contenant les méthodes d'extension d'une ou plusieurs classes,
-  [System.Collections.HashTable] $Datas
+   # DictionaryEntry contenant les méthodes d'extension d'une classes,
+ [System.Collections.DictionaryEntry] $Entry
  )
 
 #Pour chaque type, on crée autant de balise <ScriptMethod> que de méthodes recensées.
@@ -421,27 +261,27 @@ Function New-ExtensionMethodType{
 #Si le nombre de paramètres correspond, mais pas leurs type alors le shell déclenchera une exception.
 
  process {
-   #Pour chaque type (classe/struct)
-  $Datas.GetEnumerator()|
-   Foreach {
-    $CurrentType=$_.Key
-    $CurrentValue=$_.Value
-    Write-Debug "_Type '$CurrentType'"
-    _Type -Name $CurrentType -Members {
+    $TypeName=$Entry.Key
+    $Methods=$Entry.Value
+    Write-Verbose "Type '$TypeName'"
+    New-Type -Name $TypeName -Members {
 
-    $CurrentValue| Group Name |
+    $Methods| Group-Object Name |
       #Pour chaque groupe de méthodes du type courant
       #Utilise une Here-String imbriquées
-    Foreach {
+    Foreach-Object {
+      Write-Verbose "`tMethod '$($_.Name)'"
         #ToString() peut provoquer des appels récursifs fatal, par exemple sur System.Object
       if ( $_.Name -eq 'ToString')
-      { Write-Warning "Excluded method : $CurrentType.ToString()" }
+      { Write-Warning "Excluded method : $TypeName.ToString()" }
       else
       {
         # May the force be with you
         # todo refactoring
+        # MakeBody : PSObject + stringbuilder ?
         $SwitchScript= @"
-$("`t"*6)switch (`$args.Count) {
+
+$("`t")  switch (`$args.Count) {
            $(
              $_.group|
                 #Pour faciliter le tri on ajoute un membre contenant le nombre de paramètre de la méthode.
@@ -451,9 +291,9 @@ $("`t"*6)switch (`$args.Count) {
                 #  public static SubStringFrom From(this string s, int start);
                 #  public static SubStringFrom From(this string s, string start);
                 #Dans ce cas leurs types est différent, ce qui ne pose pas de pb car PowerShell est non typé.
-                #
-              Sort ParameterCount -unique|
-              foreach {
+                #note : pas de gestion nécessaire pour  Ref et Out -> Compiler Error CS1101
+              Sort-Object ParameterCount -unique|
+              Foreach-Object {
                $Count=$_.GetParameters().Count
                  #On soustrait 1 à $Count pour créer un décalage :
                  #    0 =$this                   -> $Objet.Method()
@@ -467,30 +307,131 @@ $("`t"*6)switch (`$args.Count) {
                  #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
                  #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
 @"
-$("`t"*7)$($Count-1) { [$($_.Declaringtype)]::$($_.Name)(`$this$(
-              "$(if ($Count -gt 1){1..($Count-1)|Foreach {",`$args[$($_-1)]"}})"))}`r`n`t
+$("`t")$($Count-1) { [$($_.Declaringtype)]::$($_.Name)(`$this$(
+              "$(if ($Count -gt 1){1..($Count-1)|Foreach-Object {",`$args[$($_-1)]"}})"))}`r`n`t
 "@
               }
            )
-            default { throw "La méthode $($_.Name) ne propose pas de signature contenant `$(`$args.Count) paramètres." }
+            default { throw "The method '$($_.Name)' does not offer a signature containing `$(`$args.Count) parameters." }
           }
 "@
        Write-Debug "`tWrite ScriptMethod '$($_.Name)'"
-       Write-debug "script: $SwitchScript"
-       ScriptMethod -Name $_.Name -Script $SwitchScript
+       Write-debug "`tscript: $SwitchScript"
+       New-ScriptMethod -Name $_.Name -Script $SwitchScript
       } #else
-     } #foreach  $CurrentValue
+     } #foreach $Methods
     } #_Type
-  }#foreach Classes
  } #process
 } #New-ExtensionMethodType
 
+function New-ExtendedTypeData {
+  #Create an extension file (ETS) containing wrappers of extension methods
+ [CmdletBinding(DefaultParameterSetName="Path",SupportsShouldProcess = $true)]
+ param(
+    #Type to analyze
+    [ValidateNotNull()]
+    [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+   [System.Type] $Type,
+
+    #Full path of the ps1xml file.
+    #if all is specified, one file is created for each type, the path is:
+    # DirectoryName + TypeName + .ps1xml
+    [parameter(Mandatory=$True, ParameterSetName="Path")]
+    [ValidateNotNullOrEmpty()]
+   [string]$Path,
+
+     #Full literal path of the ps1xml file
+     [parameter(Mandatory=$True, ParameterSetName="LiteralPath")]
+     [ValidateNotNullOrEmpty()]
+   [string]$LiteralPath,
+
+    #All extendend member are in the same file, otherwise one file is created for each type
+   [Switch] $All,
+
+    #Overwrite existent file, otherwise the operation is canceled.
+   [Switch] $Force
+ )
+  begin {
+    $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
+
+    function WriteDatas{
+      param (
+        [string] $FileName,
+        [string] $Datas,
+        [switch] $isLiteral
+      )
+
+      if ($isLiteral)
+      { $isExist=$ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($FileName)),$false,$false) }
+      else
+      { $isExist=$ExecutionContext.InvokeProvider.Item.Exists($FileName,$false,$false)  }
+
+      #todo -Confirm
+      if ($isExist -and -not $Force)
+      {
+        Write-warning "The file $FileName exist, operation canceled. Use -Force to overwrite the file."
+        return
+      }
+      Write-verbose "Overwrite the file : $FileName"
+
+      if ($PSCmdlet.ShouldProcess( "Create the ETS file '$FileName'",
+                                   "Create the ETS file '$FileName'?",
+                                   "Create ETS file" ))
+      {
+        if ($isLiteral)
+        { Set-Content -Value $Datas -LiteralPath $FileName -Encoding UTF8 }
+        else
+        { Set-Content -Value $Datas -Path $FileName -Encoding UTF8 }
+      }
+    }#WriteDatas
+  }#begin
+
+  End {
+    if ($PSCmdlet.MyInvocation.ExpectingInput)
+    { $Types=$input }
+    else
+    { $Types=$Type }
+
+    if ($isLiteral)
+    { $FileInfo=[System.IO.FileInfo]$LiteralPath }
+    else
+    { $FileInfo=[System.IO.FileInfo]$Path }
+
+    $Result=$Types|
+      Find-ExtensionMethod -ExcludeGeneric|
+      Get-ExtensionMethodInfo -ExcludeGeneric -ExcludeInterface|
+      New-HashTable -key "Key" -Value "Value" -MakeArray
+
+    if ($All)
+    {
+      $ScriptMethods=$Result.GetEnumerator() | New-ExtensionMethodType
+      $EtsDatas=New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
+         $ScriptMethods
+       }
+     WriteDatas -FileName $FileInfo -Datas $EtsDatas -isLiteral:$isLiteral
+    }
+    else
+    {
+      $Result.GetEnumerator() |
+       Foreach-Object {
+          #possible : System.Object[].ps1xml
+          $LiteralPath ="{0}\{1}.ps1xml" -F $FileInfo.DirectoryName,$_.Key
+          $ScriptMethod=New-ExtensionMethodType -Entry $_
+          Write-Verbose "Create '$FileName'"
+          $EtsDatas= New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
+             $ScriptMethod
+           }
+          WriteDatas -FileName $LiteralPath -Datas $EtsDatas -isLiteral
+       }#foreach
+    }#else
+ }#end
+}#New-ExtendedTypeData
 
 # Suppression des objets du module
 Function OnRemoveExtensionMethod {
   $DebugLogger.PSDebug("Remove TypeAccelerators") #<%REMOVE%>
   $ExtensionMethodShortCut.GetEnumerator()|
-   Foreach {
+   Foreach-Object {
      Try {
        [void]$AcceleratorsType::Remove($_.Key)
      } Catch {

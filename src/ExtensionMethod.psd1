@@ -55,7 +55,6 @@ Description = 'Creation of ps1xml file dedicated to the extension methods contai
 RequiredModules=@(
     @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.0.1"},
     @{ModuleName="UncommonSense.PowerShell.TypeData";GUID="eb90261b-fbaa-4b20-85ae-2fc44dc0b7de"; ModuleVersion="1.0.0"}
-
 )
 #<UNDEF %DEBUG%>
 
@@ -76,12 +75,13 @@ RequiredModules=@(
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
+	'New-HashTable',
 	'Find-ExtensionMethod',
-	'Test-ClassExtensionMethods',
+    'Format-TableExtensionMethod',
+	'Test-ClassExtensionMethod',
 	'Get-ExtensionMethodInfo',
-    'New-HashTable',
-	'Format-TableExtensionMethod',
-	'New-ExtensionMethodType'
+    'New-ExtensionMethodType',
+    'New-ExtendedTypeData'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -108,7 +108,7 @@ PrivateData = @{
     PSData = @{
 
          # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Extension','Method','ETS','ps1xml','xml')
+        Tags = @('Extension','Method','ETS','ps1xml','type','extended','system','ets','add-member','update-typedata','ps1xml')
 
          # A URL to the license for this module.
         LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
