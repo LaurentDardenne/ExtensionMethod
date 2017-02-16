@@ -3,7 +3,7 @@
 #Fonctions d'aide à la création de fichier ps1xml dédié aux
 # méthodes d'extension contenues dans un fichier assembly dotnet.
 #
-#D'après une idée de Bart De Smet's :
+#From an idea of Bart De Smet's :
 # http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx
 #
 #doc: https://msdn.microsoft.com/en-us/library/dd878306(v=vs.85).aspx
@@ -276,48 +276,50 @@ Function New-ExtensionMethodType{
       { Write-Warning "Excluded method : $TypeName.ToString()" }
       else
       {
-        # May the force be with you
-        # todo refactoring
-        # MakeBody : PSObject + stringbuilder ?
-        $SwitchScript= @"
-
-$("`t")  switch (`$args.Count) {
-           $(
-             $_.group|
-                #Pour faciliter le tri on ajoute un membre contenant le nombre de paramètre de la méthode.
-              Add-member ScriptProperty ParameterCount -value {$this.GetParameters().Count} -Force -pass|
-                #On ne crée qu'une seule ligne pour les méthodes surchargées utilisant un nombre identique de paramètres.
-                #Exemple :
-                #  public static SubStringFrom From(this string s, int start);
-                #  public static SubStringFrom From(this string s, string start);
-                #Dans ce cas leurs types est différent, ce qui ne pose pas de pb car PowerShell est non typé.
-                #note : pas de gestion nécessaire pour  Ref et Out -> Compiler Error CS1101
-              Sort-Object ParameterCount -unique|
-              Foreach-Object {
-               $Count=$_.GetParameters().Count
-                 #On soustrait 1 à $Count pour créer un décalage :
-                 #    0 =$this                   -> $Objet.Method()
-                 #    1=$this,$args[0]           -> $Objet.Method($Param1)
-                 #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)
-                 #
-                 # Le décalage sur le nombre de paramètres est dû au fait que l'on doit prendre en charge
-                 # le modificateur C# this, qui est égal à $this dans un script de méthode PowerShell, celui-ci
-                 # n'est pas précisé lors de l'appel de la méthode PowerShell.
-                 #
-                 #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
-                 #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
-@"
-$("`t")$($Count-1) { [$($_.Declaringtype)]::$($_.Name)(`$this$(
-              "$(if ($Count -gt 1){1..($Count-1)|Foreach-Object {",`$args[$($_-1)]"}})"))}`r`n`t
-"@
-              }
-           )
-            default { throw "The method '$($_.Name)' does not offer a signature containing `$(`$args.Count) parameters." }
+        #begin switch
+        $Script=New-Object System.Text.StringBuilder " switch (`$args.Count) {`r`n"
+        $_.group|
+            #Pour faciliter le tri on ajoute un membre contenant le nombre de paramètre de la méthode.
+        Add-member ScriptProperty ParameterCount -value {$this.GetParameters().Count} -Force -PassThru|
+            #On ne crée qu'une seule ligne pour les méthodes surchargées utilisant un nombre identique de paramètres.
+            #Exemple :
+            #  public static SubStringFrom From(this string s, int start);
+            #  public static SubStringFrom From(this string s, string start);
+            #Dans ce cas leurs types est différent, ce qui ne pose pas de pb car PowerShell est non typé.
+            #note : pas de gestion nécessaire pour  Ref et Out -> Compiler Error CS1101
+        Sort-Object ParameterCount -unique|
+        Foreach-Object {
+            $Count=$_.ParameterCount
+                #On soustrait 1 à $Count pour créer un décalage :
+                #    0 =$this                   -> $Objet.Method()
+                #    1=$this,$args[0]           -> $Objet.Method($Param1)
+                #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)
+                #
+                # Le décalage sur le nombre de paramètres est dû au fait que l'on doit prendre en charge
+                # le modificateur C# this, qui est égal à $this dans un script de méthode PowerShell, celui-ci
+                # n'est pas précisé lors de l'appel de la méthode PowerShell.
+                #
+                #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
+                #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
+            #current case
+            $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($Count-1), $_.Declaringtype,$_.Name)) >$null
+            if ($Count -gt 1)
+            {
+                $ofs=''
+                $arguments=1..($Count-1)|Foreach-Object { ",`$args[$($_-1)]" }
+                $Script.Append("$arguments") >$null
+            }
+            #close method call
+            $Script.Append(") }`r`n") >$null
           }
-"@
-       Write-Debug "`tWrite ScriptMethod '$($_.Name)'"
-       Write-debug "`tscript: $SwitchScript"
-       New-ScriptMethod -Name $_.Name -Script $SwitchScript
+          #default
+          $Script.Append( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $_.Name) ) >$null
+          #end switch
+          $Script.Append("`r`n }") >$null
+
+          Write-Debug "`tWrite ScriptMethod '$($_.Name)'"
+          Write-debug "`tscript: $Script"
+          New-ScriptMethod -Name $_.Name -Script $Script
       } #else
      } #foreach $Methods
     } #_Type
@@ -361,6 +363,9 @@ function New-ExtendedTypeData {
         [switch] $isLiteral
       )
 
+       #todo test c:\test[]\file.ps1xml
+       #Update-TypeData do not manage [] or `[`]
+      $FileName=$FileName -Replace '\[\]','.Array'
       if ($isLiteral)
       { $isExist=$ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($FileName)),$false,$false) }
       else
@@ -376,7 +381,7 @@ function New-ExtendedTypeData {
 
       if ($PSCmdlet.ShouldProcess( "Create the ETS file '$FileName'",
                                    "Create the ETS file '$FileName'?",
-                                   "Create ETS file" ))
+                                   "Export extension methods" ))
       {
         if ($isLiteral)
         { Set-Content -Value $Datas -LiteralPath $FileName -Encoding UTF8 }

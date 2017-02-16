@@ -1,4 +1,4 @@
-Import-Module ExtensionMethod
+﻿Import-Module ExtensionMethod
 
 $Filepath=$env:Temp
 $TypesFileName="System.Management.Automation.Language.TokenKind.Types.ps1xml"
@@ -22,9 +22,9 @@ $ScriptMethods=$ExtensionMethodInfos.GetEnumerator() | New-ExtensionMethodType
  Update-TypeData -PrependPath $FileName
 
  $Code={
- function maFonction($Serveur)
+ function FunctionOne($Serveur)
  {
-   Write-host "Dans MaFonction"
+   Write-host "Test"
  }
 }
 
