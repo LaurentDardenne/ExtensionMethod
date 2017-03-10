@@ -114,7 +114,7 @@ function Get-ExtensionMethodInfo{
     [switch] $ExcludeGeneric,
 
       # $ExcludeInterface : Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type interface.
-      #                     PowerShell v2 ne sait pas 'extraire' une interface particulière à partir d'un objet.
+      #                     PowerShell ne sait pas 'extraire' une interface particulière à partir d'un objet.
       #                     De plus les objets de type IEnumerable sont transformés en System.Array par PowerShell...
     [switch] $ExcludeInterface
   )
@@ -122,7 +122,7 @@ function Get-ExtensionMethodInfo{
  process {
      #Le premier paramètre de la méthode détermine le type sur lequel on déclare la méthode d'extension.
      #En C# c'est le rôle du mot clé 'this'.
-     #Une méthode d'extension a au moins 1 paramètre.
+     #Une méthode d'extension a au moins 1 paramètre qui est le type auquel associer la méthode.
     $Parameter=($MethodInfo.GetParameters())[0]
     if (!($Parameter.ParameterType.IsInterface -and $ExcludeInterface))
     {
@@ -152,23 +152,21 @@ function Get-ExtensionMethodInfo{
 
 Function New-HashTable {
    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
-                                                    Justification="New-HashTable do not change the system state.")]
+                                                      Justification="New-HashTable do not change the system state.")]
 #From http://blogs.msdn.com/b/powershell/archive/2007/11/27/new-hashtable.aspx
-# Author:   laurent Dardenne (ajout $Value)
+#        :   Laurent Dardenne (ajout $Value)
 # Version:  0.2
 # Author:   Jeffrey Snover
 # Version:  0.1
-#Requires -Version 1.0
 param(
-    $Key=$(Throw "USAGE: New-HashTable -Key <property>"),
+     [Parameter(Mandatory=$true)]
+    $Key,
     $Value,
     [Switch]$NoOverWrite,
     [Switch]$MakeArray
     )
   Begin
-  {
-      $hash = @{}
-  }
+  { $hash = @{} }
   Process
   {
        #On définit la clé
@@ -177,30 +175,29 @@ param(
        #On définit la valeur de la clé à partir
        # du nom de propriété contenue dans $Value
       if ([String]::IsNullOrEmpty($Value))
-      {  $Object=$_
-      }else
-      {  $Object=$_.$Value
-      }
+      { $Object=$_ }
+      else
+      { $Object=$_.$Value }
 
        #Pas d'écrasement de la clé si elle existe
       if ($NoOverWrite -And $hash.$Property)
-      {  Write-Error "$Property already exists"
-      }elseif ($MakeArray) #Il existe plusieurs occurences d'une même clé,
-      {                    # on crée un tableau afin de mémoriser toutes les valeurs
+      {  Write-Error "$Property already exists" }
+      elseif ($MakeArray)
+      {
+         #Il existe plusieurs occurences d'une même clé,
+         # on crée un tableau afin de mémoriser toutes les valeurs
          if (!$hash.$Property)
-         {   $hash.$Property = new-object System.Collections.ArrayList
-         }
+         { $hash.$Property = new-object System.Collections.ArrayList }
          [void]$hash.$Property.Add($Object)
-      }else
+      }
+      else
       {    #Il n'existe qu'une occurence d'une clé
            #On la remplace si elle existe.
          $hash.$Property = $Object
       }
   }
   End
-  {
-      $hash
-  }
+  { $hash }
 }#New-HashTable
 
 function Format-TableExtensionMethod{
@@ -225,15 +222,15 @@ $Hashtable.GetEnumerator()|
 
 Function New-ExtensionMethodType{
  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
-                                                    Justification="New-ExtensionMethodType  do not change the system state.")]
+                                                    Justification="New-ExtensionMethodType do not change the system state.")]
 
-#Renvoi un ou des objets contenant la définition d'un type ETS déclarant ou ou plusieus membre de type ScritpMethod
+#Renvoi un ou des objets contenant la définition d'un type ETS déclarant ou ou plusieus membre de type ScriptMethod
  [CmdletBinding()]
  [OutputType([UncommonSense.PowerShell.TypeData.Type])]
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-   # DictionaryEntry contenant les méthodes d'extension d'une classes,
+   # DictionaryEntry contenant les méthodes d'extension d'une classe,
  [System.Collections.DictionaryEntry] $Entry
  )
 
@@ -280,18 +277,18 @@ Function New-ExtensionMethodType{
         $Script=New-Object System.Text.StringBuilder " switch (`$args.Count) {`r`n"
         $_.group|
             #Pour faciliter le tri on ajoute un membre contenant le nombre de paramètre de la méthode.
-        Add-member ScriptProperty ParameterCount -value {$this.GetParameters().Count} -Force -PassThru|
+         Add-member ScriptProperty ParameterCount -value {$this.GetParameters().Count} -Force -PassThru|
             #On ne crée qu'une seule ligne pour les méthodes surchargées utilisant un nombre identique de paramètres.
             #Exemple :
             #  public static SubStringFrom From(this string s, int start);
             #  public static SubStringFrom From(this string s, string start);
             #Dans ce cas leurs types est différent, ce qui ne pose pas de pb car PowerShell est non typé.
             #note : pas de gestion nécessaire pour  Ref et Out -> Compiler Error CS1101
-        Sort-Object ParameterCount -unique|
-        Foreach-Object {
+         Sort-Object ParameterCount -unique|
+         Foreach-Object {
             $Count=$_.ParameterCount
                 #On soustrait 1 à $Count pour créer un décalage :
-                #    0 =$this                   -> $Objet.Method()
+                #    0=$this                    -> $Objet.Method()
                 #    1=$this,$args[0]           -> $Objet.Method($Param1)
                 #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)
                 #
@@ -311,18 +308,18 @@ Function New-ExtensionMethodType{
             }
             #close method call
             $Script.Append(") }`r`n") >$null
-          }
-          #default
-          $Script.Append( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $_.Name) ) >$null
-          #end switch
-          $Script.Append("`r`n }") >$null
+         }#foreach
+         #default
+         $Script.Append( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $_.Name) ) >$null
+         #end switch
+         $Script.Append("`r`n }") >$null
 
-          Write-Debug "`tWrite ScriptMethod '$($_.Name)'"
-          Write-debug "`tscript: $Script"
-          New-ScriptMethod -Name $_.Name -Script $Script
+         Write-Debug "`tWrite ScriptMethod '$($_.Name)'"
+         Write-debug "`tscript: $Script"
+         New-ScriptMethod -Name $_.Name -Script $Script
       } #else
      } #foreach $Methods
-    } #_Type
+    } #New-Type
  } #process
 } #New-ExtensionMethodType
 
@@ -338,6 +335,7 @@ function New-ExtendedTypeData {
     #Full path of the ps1xml file.
     #if all is specified, one file is created for each type, the path is:
     # DirectoryName + TypeName + .ps1xml
+    #if type name contains '[].ps1xml', by example "System.Byte[].ps1xml", the name becomes "System.Byte.Array.ps1xml"
     [parameter(Mandatory=$True, ParameterSetName="Path")]
     [ValidateNotNullOrEmpty()]
    [string]$Path,
@@ -356,38 +354,42 @@ function New-ExtendedTypeData {
   begin {
     $isLiteral = $PsCmdlet.ParameterSetName -eq 'LiteralPath'
 
+    $fileConflictConfirmNoToAll = $false
+    $fileConflictConfirmYesToAll = $false
+
     function WriteDatas{
+       [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidShouldContinueWithoutForce","",
+                                                          Justification="WriteDatas create files.The caller declare ShouldProcess.")]
       param (
         [string] $FileName,
         [string] $Datas,
         [switch] $isLiteral
       )
 
-       #todo test c:\test[]\file.ps1xml
-       #Update-TypeData do not manage [] or `[`]
-      $FileName=$FileName -Replace '\[\]','.Array'
+       #Update-TypeData do not manage [] or `[`] for the name of the file : Byte[].ps1xml
+       # but c:\Temp\test[1]\Byte.Array.ps1xml is possible for the directory of the file
+      $FileName=$FileName -Replace '\[\].ps1xml$','.Array.ps1xml'
       if ($isLiteral)
       { $isExist=$ExecutionContext.InvokeProvider.Item.Exists(([Management.Automation.WildcardPattern]::Escape($FileName)),$false,$false) }
       else
       { $isExist=$ExecutionContext.InvokeProvider.Item.Exists($FileName,$false,$false)  }
 
-      #todo -Confirm
-      if ($isExist -and -not $Force)
-      {
-        Write-warning "The file $FileName exist, operation canceled. Use -Force to overwrite the file."
-        return
-      }
-      Write-verbose "Overwrite the file : $FileName"
-
       if ($PSCmdlet.ShouldProcess( "Create the ETS file '$FileName'",
                                    "Create the ETS file '$FileName'?",
                                    "Export extension methods" ))
-      {
-        if ($isLiteral)
-        { Set-Content -Value $Datas -LiteralPath $FileName -Encoding UTF8 }
-        else
-        { Set-Content -Value $Datas -Path $FileName -Encoding UTF8 }
-      }
+      { #todo messages localization
+        if (-Not $isExist -or $Force -or $PSCmdlet.ShouldContinue('OverwriteFile',
+                                                                  "Existing file '$FileName'",
+                                                                  [ref]$fileConflictConfirmYesToAll,
+                                                                  [ref]$fileConflictConfirmNoToAll))
+       {
+          #Only one confirmation
+         if ($isLiteral)
+         { Set-Content -Value $Datas -LiteralPath $FileName -Encoding UTF8 -Confirm:$false}
+         else
+         { Set-Content -Value $Datas -Path $FileName -Encoding UTF8 -Confirm:$false}
+       }
+      }#ShouldProcess
     }#WriteDatas
   }#begin
 
@@ -413,7 +415,7 @@ function New-ExtendedTypeData {
       $EtsDatas=New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
          $ScriptMethods
        }
-     WriteDatas -FileName $FileInfo -Datas $EtsDatas -isLiteral:$isLiteral
+      WriteDatas -FileName $FileInfo -Datas $EtsDatas -isLiteral:$isLiteral
     }
     else
     {
