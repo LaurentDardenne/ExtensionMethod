@@ -40,10 +40,9 @@ cd $env:Temp
 nuget install Z.ExtensionMethods
 
 $AssemblyPath="$env:Temp\Z.ExtensionMethods.2.0.10\lib\net45\Z.ExtensionMethods.dll"
-$AssemblyPath="C:\Temp\Z.ExtensionMethods.2.0.10\lib\net45\Z.ExtensionMethods.dll"
 
 Add-Type -Path $AssemblyPath -Pass|
- New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml -All
+ New-ExtendedTypeData -Path c:\temp\All.ps1xml -All
 
 Add-Type -Path $AssemblyPath -Pass|
  New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml
