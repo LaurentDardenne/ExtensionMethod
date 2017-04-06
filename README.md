@@ -1,4 +1,4 @@
-# ExtensionMethod
+﻿# ExtensionMethod
 Creation of ps1xml file dedicated to the extension methods contained in an assembly.
 From an idea of [Bart De Smet's](http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx)
 
@@ -81,3 +81,13 @@ Mode                LastWriteTime         Length Name
 -a----       16/02/2017     13:07           3736 System.Data.Common.DbConnection.ps1xml
 ...
 ```
+
+To install this module :
+```Powershell
+$PSGalleryPublishUri = 'https://www.myget.org/F/ottomatt/api/v2/package'
+$PSGallerySourceUri = 'https://www.myget.org/F/ottomatt/api/v2'
+
+Register-PSRepository -Name OttoMatt -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri #-InstallationPolicy Trusted
+Install-Module ExtensionMethod -Repository OttoMatt
+```
+This package install an unofficial version of the [UncommonSense.PowerShell.TypeData](https://github.com/jhoek/UncommonSense.PowerShell.TypeData) module.
