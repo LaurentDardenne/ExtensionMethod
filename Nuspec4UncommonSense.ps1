@@ -1,4 +1,4 @@
-﻿$ModuleVersion=(Import-ManifestData "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1").ModuleVersion
+﻿$ModuleVersion=(Import-ManifestData "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1").ModuleVersion
 
 $Result=nuspec 'UncommonSense.PowerShell.TypeData' $ModuleVersion {
    properties @{
@@ -27,18 +27,19 @@ In an attempt to simplify and shorten the syntax:
    }
 
    files {
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.dll"
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1"
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psm1"
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.Tests.ps1"
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\LICENSE.md"
-        file -src "C:\Users\Laurent\Documents\WindowsPowerShell\Modules\UncommonSense.PowerShell.TypeData\README.md"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.dll"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psm1"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.Tests.ps1"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.dll-Help.xml"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\LICENSE.md"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\README.md"
 
    }
 }
 
 $Result|
-  Push-nupkg -Path $TemplateDelivery -Source 'https://www.myget.org/F/ottomatt/api/v2/package'
+  Push-nupkg -Path $env:temp -Source 'https://www.myget.org/F/ottomatt/api/v2/package'
 
 # $PSGalleryPublishUri = 'https://www.myget.org/F/ottomatt/api/v2/package'
 # $PSGallerySourceUri = 'https://www.myget.org/F/ottomatt/api/v2'
