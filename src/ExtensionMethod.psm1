@@ -154,11 +154,16 @@ Function New-HashTable {
    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                       Justification="New-HashTable do not change the system state.")]
 #From http://blogs.msdn.com/b/powershell/archive/2007/11/27/new-hashtable.aspx
+#        :   Laurent Dardenne (ajout $InpurObject, Mandatory)
+# Version:  0.3
 #        :   Laurent Dardenne (ajout $Value)
 # Version:  0.2
 # Author:   Jeffrey Snover
 # Version:  0.1
 param(
+     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
+    $InputObject,
+    
      [Parameter(Mandatory=$true)]
     $Key,
     $Value,
@@ -170,14 +175,14 @@ param(
   Process
   {
        #On définit la clé
-      $Property = $_.$key
+      $Property = $InputObject.$key
 
        #On définit la valeur de la clé à partir
        # du nom de propriété contenue dans $Value
       if ([String]::IsNullOrEmpty($Value))
-      { $Object=$_ }
+      { $Object=$InputObject }
       else
-      { $Object=$_.$Value }
+      { $Object=$InputObject.$Value } #todo test si la clé existe
 
        #Pas d'écrasement de la clé si elle existe
       if ($NoOverWrite -And $hash.$Property)
