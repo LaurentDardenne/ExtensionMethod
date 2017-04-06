@@ -1,3 +1,8 @@
+﻿2017-04-06    Version 1.3.0
+
+  Add  UncommonSense.PowerShell.TypeData Module v1.1
+  Fix New-Hastable
+  
 
 2017-02-12    Version 1.2.0
 
