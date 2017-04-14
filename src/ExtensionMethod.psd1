@@ -12,7 +12,7 @@
 RootModule = 'ExtensionMethod.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.3.0'
+ModuleVersion = '1.3.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -54,7 +54,7 @@ Description = 'Creation of ps1xml file dedicated to the extension methods contai
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules=@(
     @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.0.1"},
-    @{ModuleName="UncommonSense.PowerShell.TypeData";GUID="eb90261b-fbaa-4b20-85ae-2fc44dc0b7de"; ModuleVersion="1.1.0"}
+    @{ModuleName="UncommonSense.PowerShell.TypeData";GUID="eb90261b-fbaa-4b20-85ae-2fc44dc0b7de"; ModuleVersion="1.2.0"}
 )
 #<UNDEF %DEBUG%>
 
