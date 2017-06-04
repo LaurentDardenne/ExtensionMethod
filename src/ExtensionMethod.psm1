@@ -224,6 +224,12 @@ $Hashtable.GetEnumerator()|
  Format-Table @{Label="Method";Expression={ $_.ToString()}} -GroupBy InstanceType
 }#Format-TableExtensionMethod
 
+Function Get-ParameterComment {
+ param( $Method )
+ $MethodSignature=$Method.GetParameters()|Foreach-Object {'[{0}] ${1}' -f $_.Parametertype,$_.Name}
+ $ofs=', '
+ return "# $($Method.Name)($MethodSignature)`r`n"
+}
 
 Function New-ExtensionMethodType{
  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
@@ -304,6 +310,7 @@ Function New-ExtensionMethodType{
                 #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
                 #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
             #current case
+            $Script.Append( ("`t`t`t`t $(Get-ParameterComment -Method $_)")) >$null
             $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($Count-1), $_.Declaringtype,$_.Name)) >$null
             if ($Count -gt 1)
             {
@@ -312,7 +319,7 @@ Function New-ExtensionMethodType{
                 $Script.Append("$arguments") >$null
             }
             #close method call
-            $Script.Append(") }`r`n") >$null
+            $Script.Append(") }`r`n`r`n") >$null
          }#foreach
          #default
          $Script.Append( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $_.Name) ) >$null
