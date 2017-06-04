@@ -1,4 +1,14 @@
-﻿2017-04-06    Version 1.3.0
+﻿2017-06-04    Version 1.3.2
+
+    Change  New-ExtensionMethodType
+             Adding method signature as comment
+               version 1.3.1 :
+                  1 { [Nager.Date.Extensions.DateTimeExtension]::IsWeekend($this,$args[0]) }
+               now :                
+                   # IsWeekend([System.DateTime] $dateTime, [Nager.Date.CountryCode] $countryCode)
+		              1 { [Nager.Date.Extensions.DateTimeExtension]::IsWeekend($this,$args[0]) }
+            
+2017-04-06    Version 1.3.0
 
   Add  UncommonSense.PowerShell.TypeData Module v1.1
   Fix New-Hastable
