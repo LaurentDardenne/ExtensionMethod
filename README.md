@@ -2,6 +2,15 @@
 Creation of ps1xml file dedicated to the extension methods contained in an assembly.
 From an idea of [Bart De Smet's](http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx)
 
+To install this module :
+```Powershell
+$PSGalleryPublishUri = 'https://www.myget.org/F/ottomatt/api/v2/package'
+$PSGallerySourceUri = 'https://www.myget.org/F/ottomatt/api/v2'
+
+Register-PSRepository -Name OttoMatt -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri #-InstallationPolicy Trusted
+Install-Module ExtensionMethod -Repository OttoMatt
+```
+
 This code return all types containing extension methods :
 ```Powershell
  [psobject].Assembly.ExportedTypes|Find-ExtensionMethod -ExcludeGeneric|%  {$_.ToString()}
