@@ -1,5 +1,19 @@
 ﻿#ExtensionMethod.psm1
 
+#Todo :
+# GetValue([System.Management.Automation.Language.NamedAttributeArgumentAst] $attrAst, [System.Management.Automation.Language.ExpressionAst&amp;] $argumentAst)
+# les parametres Ref et Out  sont poste fixé par & 
+#    System.Management.Automation.Language.ExpressionAst&
+#infos méthode
+#   ParameterType    : System.Management.Automation.Language.ExpressionAst&
+#   Name             : argumentAst
+#   Attributes       : Out
+#   ...
+
+# parametertype.isbyref -> true -> c'est un 'Out parametre'
+#Type realType = pInfo.ParameterType.GetElementType();
+#cf https://stackoverflow.com/questions/738277/net-reflection-how-to-get-real-type-from-out-parameterinfo
+
 #Fonctions d'aide à la création de fichier ps1xml dédié aux
 # méthodes d'extension contenues dans un fichier assembly dotnet.
 #
@@ -22,23 +36,6 @@ $Params=@{
 &$InitializeLogging @Params
 #<UNDEF %DEBUG%>
 
- #Liste des raccourcis de type
- #ATTENTION ne pas utiliser dans la déclaration d'un type de paramètre d'une fonction
-$ExtensionMethodShortCut=@{}
-
-$AcceleratorsType= [PSObject].Assembly.GetType("System.Management.Automation.TypeAccelerators")
-
-Try {
-    $ExtensionMethodShortCut.GetEnumerator()| Foreach-Object {
-   Try {
-     $AcceleratorsType::Add($_.Key,$_.Value)
-   } Catch [System.Management.Automation.MethodInvocationException]{
-     Write-Error -Exception $_.Exception
-   }
- }
-} Catch [System.Management.Automation.RuntimeException] {
-   Write-Error -Exception $_.Exception
-}
 
 function Find-ExtensionMethod{
   #Recherche et renvoi les méthodes d'extension contenu dans le type $Type.
@@ -154,7 +151,7 @@ Function New-HashTable {
    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                       Justification="New-HashTable do not change the system state.")]
 #From http://blogs.msdn.com/b/powershell/archive/2007/11/27/new-hashtable.aspx
-#        :   Laurent Dardenne (ajout $InpurObject, Mandatory)
+#        :   Laurent Dardenne (ajout $InputObject, Mandatory)
 # Version:  0.3
 #        :   Laurent Dardenne (ajout $Value)
 # Version:  0.2
@@ -225,8 +222,70 @@ $Hashtable.GetEnumerator()|
 }#Format-TableExtensionMethod
 
 Function Get-ParameterComment {
+# need dotNET 4.5 -> ps v4 and > 
  param( $Method )
- $MethodSignature=$Method.GetParameters()|Foreach-Object {'[{0}] ${1}' -f $_.Parametertype,$_.Name}
+  $MethodSignature= foreach($Parameter in $Method.GetParameters()) {
+    
+    $ParameterName=$Parameter.Name
+    Write-Debug "$ParameterName"
+    if ($Parameter.ParameterType.IsByRef)
+    { 
+      Write-Debug " byRef"
+      #[ref] powershell is for 'out' and 'ref' c# parameter modifier
+      $ParameterStatement="[ref] [$($Parameter.ParameterType.GetElementType())]"
+    }
+    else
+    {
+      $ParameterStatement="[$($Parameter.ParameterType)]" #default  
+      if ($Parameter.IsOptional)
+      {
+        Write-Debug " optional"
+        $ParameterType=$Parameter.ParameterType
+        if ($Parameter.HasDefaultValue)
+        {
+           Write-Debug "  hasDefault"
+           $isPtr=($ParameterType.FullName -eq 'System.IntPtr') -or ($ParameterType.FullName -eq 'System.UIntPtr')
+           if ($null -eq $Parameter.DefaultValue)
+           { 
+             $ParameterName +="=`$null"
+             if ($isPtr)
+             {$ParameterName +=" OR new OR default" } #impossible to determine one of the three cases ?
+           }
+           else
+           {
+             Write-Debug "   NotNull value"
+             if (($Parameter.RawDefaultValue -is [string]) -or (($Parameter.RawDefaultValue -is [char]) ))  
+             {
+               Write-Debug "     String or Char"
+               $ParameterName +="='$($Parameter.RawDefaultValue)'" 
+             }
+             elseif ($ParameterType.isEnum)
+             { 
+               Write-Debug "     ENUM"
+               $ParameterName +="='$([system.Enum]::Parse($Parameter.ParameterType,$Parameter.RawDefaultValue))'" 
+             }
+             elseif ($Parameter.RawDefaultValue -is [boolean])
+             { 
+               Write-Debug "     bool"
+               $ParameterName +="=`$$($Parameter.RawDefaultValue)" 
+             }
+             elseif (($ParameterType.isPrimitive -and (-not $isPtr)) -or ($Parameter.RawDefaultValue -is [Decimal]) -or ($Parameter.RawDefaultValue -is [Single]))
+             { 
+               Write-Debug "     Numeric"
+               $ParameterName +="=$($Parameter.DefaultValue.ToString([System.Globalization.CultureInfo]::InvariantCulture))" 
+             }
+             #else TODO ? isArray Or IEnumerable
+           }  
+        }#hasDefaultValue
+        else
+        { 
+          Write-Debug "     Default"
+          $ParameterName +="=new OR default" 
+        }
+      }#isOptionnal
+    }
+   '{0} ${1}' -f $ParameterStatement,$ParameterName
+  }
  $ofs=', '
  return "# $($Method.Name)($MethodSignature)`r`n"
 }
@@ -446,22 +505,13 @@ function New-ExtendedTypeData {
  }#end
 }#New-ExtendedTypeData
 
+#<DEFINE %DEBUG%>
 # Suppression des objets du module
 Function OnRemoveExtensionMethod {
-  $DebugLogger.PSDebug("Remove TypeAccelerators") #<%REMOVE%>
-  $ExtensionMethodShortCut.GetEnumerator()|
-   Foreach-Object {
-     Try {
-       [void]$AcceleratorsType::Remove($_.Key)
-     } Catch {
-       write-Error -Exception $_.Exception
-     }
-   }
-#<DEFINE %DEBUG%>
   Stop-Log4Net $Script:lg4n_ModuleName
-#<UNDEF %DEBUG%>
 }#OnRemoveExtensionMethod
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemoveExtensionMethod }
+#<UNDEF %DEBUG%>
 
 
