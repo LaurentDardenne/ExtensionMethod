@@ -1,0 +1,1238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml" xmlns="http://msh">
+  <!-- Cmdlet: New-AliasProperty -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-AliasProperty</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>AliasProperty</command:noun>
+      <maml:description>
+        <maml:para>Creates a new alias property definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>An alias property defines a new name for an existing property.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-AliasProperty</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: ReferencedMemberName -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>ReferencedMemberName</maml:name>
+          <maml:description>
+            <maml:para>The name of the referenced property that this alias refers to.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: TypeName -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>TypeName</maml:name>
+          <maml:description>
+            <maml:para>The full name of the .NET Framework type of the referenced property value.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: ReferencedMemberName -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>ReferencedMemberName</maml:name>
+        <maml:description>
+          <maml:para>The name of the referenced property that this alias refers to.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: TypeName -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>TypeName</maml:name>
+        <maml:description>
+          <maml:para>The full name of the .NET Framework type of the referenced property value.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: AliasProperty -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.AliasProperty</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-CodeMethod -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-CodeMethod</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>CodeMethod</command:noun>
+      <maml:description>
+        <maml:para>Creates a new code method definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A code method references a static method of a .NET Framework object.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-CodeMethod</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: CodeReference -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>CodeReference</maml:name>
+          <maml:description>
+            <maml:para>The code reference for this code method. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">CodeReference</command:parameterValue>
+          <dev:type>
+            <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: CodeReference -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>CodeReference</maml:name>
+        <maml:description>
+          <maml:para>The code reference for this code method. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">CodeReference</command:parameterValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: CodeMethod -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeMethod</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-CodeProperty -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-CodeProperty</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>CodeProperty</command:noun>
+      <maml:description>
+        <maml:para>Creates a new code property definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A code property references a static property of a .NET Framework object.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-CodeProperty</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: GetCodeReference -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>GetCodeReference</maml:name>
+          <maml:description>
+            <maml:para>The code reference for this accessor. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">CodeReference</command:parameterValue>
+          <dev:type>
+            <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: SetCodeReference -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="2">
+          <maml:name>SetCodeReference</maml:name>
+          <maml:description>
+            <maml:para>The code reference for this accessor. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">CodeReference</command:parameterValue>
+          <dev:type>
+            <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: GetCodeReference -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>GetCodeReference</maml:name>
+        <maml:description>
+          <maml:para>The code reference for this accessor. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">CodeReference</command:parameterValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: SetCodeReference -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="2">
+        <maml:name>SetCodeReference</maml:name>
+        <maml:description>
+          <maml:para>The code reference for this accessor. Code references instances can be created using the New-CodeReference cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">CodeReference</command:parameterValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: CodeProperty -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeProperty</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-CodeReference -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-CodeReference</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>CodeReference</command:noun>
+      <maml:description>
+        <maml:para>Creates a new code reference.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Code references can be used as parameter values in the New-CodeMethod and New-CodeProperty cmdlets.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-CodeReference</maml:name>
+        <!-- Parameter: TypeName -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>TypeName</maml:name>
+          <maml:description>
+            <maml:para>Defines the .NET type name that this code reference refers to</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: MethodName -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>MethodName</maml:name>
+          <maml:description>
+            <maml:para>Defines the .NET method name that this code reference refers to</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: MethodName -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>MethodName</maml:name>
+        <maml:description>
+          <maml:para>Defines the .NET method name that this code reference refers to</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: TypeName -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>TypeName</maml:name>
+        <maml:description>
+          <maml:para>Defines the .NET type name that this code reference refers to</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: CodeReference -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.CodeReference</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-MemberSet -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-MemberSet</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>MemberSet</command:noun>
+      <maml:description>
+        <maml:para>Creates a new member set definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The PSStandardMembers member set is used by Windows PowerShell to define the default property sets for an object.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-MemberSet</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: Members -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="1">
+          <maml:name>Members</maml:name>
+          <maml:description>
+            <maml:para>Defines the members for this memberset</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: DoNotInheritMembers -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>DoNotInheritMembers</maml:name>
+          <maml:description>
+            <maml:para>Inheriting members tells this MemberSet to walk the TypeNames during a lookup of members. This means that any members of a parent type that are in a MemberSet of the same name will be available through this MemberSet. Setting this switch turns off this behaviour.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: DoNotInheritMembers -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>DoNotInheritMembers</maml:name>
+        <maml:description>
+          <maml:para>Inheriting members tells this MemberSet to walk the TypeNames during a lookup of members. This means that any members of a parent type that are in a MemberSet of the same name will be available through this MemberSet. Setting this switch turns off this behaviour.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: Members -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="1">
+        <maml:name>Members</maml:name>
+        <maml:description>
+          <maml:para>Defines the members for this memberset</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: MemberSet -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.MemberSet</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-NoteProperty -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-NoteProperty</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>NoteProperty</command:noun>
+      <maml:description>
+        <maml:para>Creates a new note property definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A note property defines a property that has a static value.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-NoteProperty</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: Value -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The (static) value for this note property</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <!-- Parameter: TypeName -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>TypeName</maml:name>
+          <maml:description>
+            <maml:para>The full name of the .NET Framework type of the referenced property value.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: TypeName -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>TypeName</maml:name>
+        <maml:description>
+          <maml:para>The full name of the .NET Framework type of the referenced property value.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Value -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>Value</maml:name>
+        <maml:description>
+          <maml:para>The (static) value for this note property</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: NoteProperty -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.NoteProperty</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-PropertySet -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-PropertySet</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>PropertySet</command:noun>
+      <maml:description>
+        <maml:para>Creates a new property set definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A property set defines a group of extended properties that can be referenced by the name of the set.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-PropertySet</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: ReferencedProperties -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>ReferencedProperties</maml:name>
+          <maml:description>
+            <maml:para>Defines the properties that this property set references</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string[]</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: ReferencedProperties -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>ReferencedProperties</maml:name>
+        <maml:description>
+          <maml:para>Defines the properties that this property set references</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string[]</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: PropertySet -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.PropertySet</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-ScriptMethod -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-ScriptMethod</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>ScriptMethod</command:noun>
+      <maml:description>
+        <maml:para>Creates a new script method definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A script method defines a method whose value is the output of a script.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-ScriptMethod</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: Script -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>Script</maml:name>
+          <maml:description>
+            <maml:para>Defines the script block for this script method</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: Script -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>Script</maml:name>
+        <maml:description>
+          <maml:para>Defines the script block for this script method</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: ScriptMethod -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.ScriptMethod</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-ScriptProperty -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-ScriptProperty</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>ScriptProperty</command:noun>
+      <maml:description>
+        <maml:para>Creates a new script property definition.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>A script property defines a property whose value is the output of a script.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-ScriptProperty</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name of this member</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: GetScriptBlock -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+          <maml:name>GetScriptBlock</maml:name>
+          <maml:description>
+            <maml:para>Defines the getter script block for this script property</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: SetScriptBlock -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="2">
+          <maml:name>SetScriptBlock</maml:name>
+          <maml:description>
+            <maml:para>Defines the setter script block for this script property</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: IsHidden -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>IsHidden</maml:name>
+          <maml:description>
+            <maml:para>Set true if the member is supposed to be hidden</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: GetScriptBlock -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="1">
+        <maml:name>GetScriptBlock</maml:name>
+        <maml:description>
+          <maml:para>Defines the getter script block for this script property</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: IsHidden -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>IsHidden</maml:name>
+        <maml:description>
+          <maml:para>Set true if the member is supposed to be hidden</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <!-- Parameter: SetScriptBlock -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="2">
+        <maml:name>SetScriptBlock</maml:name>
+        <maml:description>
+          <maml:para>Defines the setter script block for this script property</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name of this member</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: ScriptProperty -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.ScriptProperty</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-Type -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-Type</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>Type</command:noun>
+      <maml:description>
+        <maml:para>Adds a type to a type file structure, as a container for subsequent member definitions.</maml:para>
+      </maml:description>
+    </command:details>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-Type</maml:name>
+        <!-- Parameter: Name -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Name for this type.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: Members -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="1">
+          <maml:name>Members</maml:name>
+          <maml:description>
+            <maml:para>A script block that evaluates to the members of this type.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: TypeConverter -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>TypeConverter</maml:name>
+          <maml:description>
+            <maml:para>Optional type converter for this type. Pass in either a string containing the type converter type name, or a TypeConverter instance.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.PSObject</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: Members -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="1">
+        <maml:name>Members</maml:name>
+        <maml:description>
+          <maml:para>A script block that evaluates to the members of this type.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Name -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Name for this type.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: TypeConverter -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>TypeConverter</maml:name>
+        <maml:description>
+          <maml:para>Optional type converter for this type. Pass in either a string containing the type converter type name, or a TypeConverter instance.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">PSObject</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: Type -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.Type</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-TypeConverter -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-TypeConverter</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>TypeConverter</command:noun>
+      <maml:description>
+        <maml:para>Creates a new type converter.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Type converters can be used as a parameter value in the New-Type cmdlet.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-TypeConverter</maml:name>
+        <!-- Parameter: TypeName -->
+        <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+          <maml:name>TypeName</maml:name>
+          <maml:description>
+            <maml:para>The type name for this type converter.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: TypeName -->
+      <command:parameter required="true" globbing="false" pipelineInput="false" position="0">
+        <maml:name>TypeName</maml:name>
+        <maml:description>
+          <maml:para>The type name for this type converter.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: TypeConverter -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>UncommonSense.PowerShell.TypeData.TypeConverter</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+  <!-- Cmdlet: New-TypeData -->
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+    <command:details>
+      <command:name>New-TypeData</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>TypeData</command:noun>
+      <maml:description>
+        <maml:para>Creates a new type file structure.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Types files are XML-based files that let you add PowerShell properties and methods to existing .NET objects.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <!-- Parameter set: __AllParameterSets -->
+      <command:syntaxItem>
+        <maml:name>New-TypeData</maml:name>
+        <!-- Parameter: Types -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="0">
+          <maml:name>Types</maml:name>
+          <maml:description>
+            <maml:para>A script block whose contents evaluate to Type objects.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+          <dev:type>
+            <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+        <!-- Parameter: PreContent -->
+        <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+          <maml:name>PreContent</maml:name>
+          <maml:description>
+            <maml:para>Text to be emitted before the actual type data, such as an XML declaration specifying the encoding. When specifying an encoding in -PreContent, make sure you use the same encoding when sending the cmdlet's output to a file or stream.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true">string</command:parameterValue>
+          <dev:type>
+            <maml:name>System.String</maml:name>
+            <maml:uri />
+          </dev:type>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <!-- Parameter: PreContent -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="named">
+        <maml:name>PreContent</maml:name>
+        <maml:description>
+          <maml:para>Text to be emitted before the actual type data, such as an XML declaration specifying the encoding. When specifying an encoding in -PreContent, make sure you use the same encoding when sending the cmdlet's output to a file or stream.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">string</command:parameterValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+      <!-- Parameter: Types -->
+      <command:parameter required="false" globbing="false" pipelineInput="false" position="0">
+        <maml:name>Types</maml:name>
+        <maml:description>
+          <maml:para>A script block whose contents evaluate to Type objects.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.ScriptBlock</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <!-- OutputType: String -->
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+          <maml:uri />
+        </dev:type>
+      </command:returnValue>
+    </command:returnValues>
+  </command:command>
+</helpItems>

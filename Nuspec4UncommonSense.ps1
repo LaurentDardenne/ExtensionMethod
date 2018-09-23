@@ -29,12 +29,10 @@ In an attempt to simplify and shorten the syntax:
    files {
         file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.dll"
         file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1"
-        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psm1"
         file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.Tests.ps1"
-        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.dll-Help.xml"
+        file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.chm"
         file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\LICENSE.md"
         file -src "$ExtensionMethodSrc\UncommonSense.PowerShell.TypeData\README.md"
-
    }
 }
 
