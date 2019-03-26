@@ -1,5 +1,6 @@
 ﻿#ExtensionMethod.psm1
 
+#todo : http://extensionmethod.net/csharp
 #todo : [Linq.Enumerable]::Sum([int[]]($this.Compteur))
 #si le premier paramètre est de type IEnumerable un cast peut suffire
 # public static int Sum(	this IEnumerable<int> source)
