@@ -82,5 +82,5 @@ jobs:
           PSGALLERY : ${{ secrets.PSGALLERY }}
         #shell: powershell
         run: |
-          .\Build.ps1 -ReleaseConfiguration:$( '${{ github.event.inputs.Configuration }}' -eq 'Release') -Environnement ${{ github.event.inputs.Environment }}
+          .\Build.ps1 -Release:$( '${{ github.event.inputs.Configuration }}' -eq 'Release') -Environnement ${{ github.event.inputs.Environment }}
           Write-warning "Feed : https://www.myget.org/gallery/ottomatt  or https://www.myget.org/gallery/devottomatt"
