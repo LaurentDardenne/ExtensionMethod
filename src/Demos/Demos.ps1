@@ -3,6 +3,7 @@
 $Filepath=$env:Temp
 $TypesFileName="System.Management.Automation.Language.TokenKind.Types.ps1xml"
 $FileName=Join-path -Path $Filepath -ChildPath $TypesFileName
+Write-Warning "Generate file '$FileName'"
 
 $Types=[psobject].Assembly.ExportedTypes|Find-ExtensionMethod -ExcludeGeneric
 $ExtensionMethodInfos=$Types|
@@ -20,11 +21,12 @@ $ScriptMethods=$ExtensionMethodInfos.GetEnumerator() | New-ExtensionMethodType
  #   New-ExtendedTypeData -Path $TypesFileName -All -Force
 
  Update-TypeData -PrependPath $FileName
+ Write-Warning "Load TypeData"
 
  $Code={
  function FunctionOne($Serveur)
  {
-   Write-host "Test"
+   Write-Warning "Test"
  }
 }
 
