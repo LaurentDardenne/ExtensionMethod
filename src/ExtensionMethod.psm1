@@ -559,6 +559,7 @@ $CountArgCreated.Add(4)
 
 
 #todo construction des blocs a revoir
+#todo PSSA PSUseProcessBlockForPipelineCommand
 function New-ExtendedTypeData {
   #Create an extension file (ETS) containing wrappers of extension methods
  [CmdletBinding(DefaultParameterSetName="Path",SupportsShouldProcess = $true)]
