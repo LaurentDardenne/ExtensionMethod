@@ -1,36 +1,86 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Targeted environment : Prod or Dev (default)'
+        required: true
+        default: 'Dev'
+      Configuration:
+        description: 'Type of build : Release or Debug (default)'
+        required: true
+        default: 'Debug'
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+ Build-EtsDateTime-for-powershell-v5-1:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name : Add 'actionlint' extension for Github Cli
+        #shell: powershell
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          gh extension install cschleiden/gh-actionlint
+
+      - name: Set Required repositories
+        #shell: powershell
+        run: |
+            $Repositories=@(
+              [PsCustomObject]@{
+                  name='OttoMatt'
+                  publishlocation='https://www.myget.org/F/ottomatt/api/v2/package'
+                  sourcelocation='https://www.myget.org/F/ottomatt/api/v2'
+              },
+              [PsCustomObject]@{
+                  name='DevOttoMatt'
+                  publishlocation='https://www.myget.org/F/devottomatt/api/v2/package'
+                  sourcelocation='https://www.myget.org/F/devottomatt/api/v2'
+              }
+            )
+            $RepositoryNames=[System.Collections.Arraylist]::New()
+            Foreach ($Repository in $Repositories)
+            {
+              $Name=$Repository.Name
+              try{
+                  $RepositoryNames.Add($Name) > $Null
+                  Get-PSRepository $Name -EA Stop >$null
+              }catch {
+                  if ($_.CategoryInfo.Category -ne 'ObjectNotFound')
+                  { throw $_ }
+                  else
+                  {
+                    $Parameters=@{
+                        Name=$Name
+                        SourceLocation=$Repository.SourceLocation
+                        PublishLocation=$Repository.PublishLocation
+                        InstallationPolicy='Trusted'
+                    }
+                    Write-Output "Register repository '$($Repository.Name)'"
+                    Register-PSRepository @Parameters
+                  }
+              }
+            }
+      - name: PowerShell modules Cache
+        uses: potatoqualitee/psmodulecache@v5.0
+        id: psmodulecache
+
+        with:
+          modules-to-cache: InvokeBuild::, platyPS::,BuildHelpers, PowerShell-Beautifier,MeasureLocalizedData,Template,OptimizationRules,ParameterSetRules
+          shell: powershell
+          updatable: "true"
+          prefixidentifier: "true"
+
+      - name: Invoke build and publish
+        env:
+          MYGET : ${{ secrets.MYGET }}
+          PSGALLERY : ${{ secrets.PSGALLERY }}
+        #shell: powershell
+        run: |
+          .\Build.ps1 -ReleaseConfiguration:$( ${{ github.event.inputs.Configuration -eq 'Release' }} -Environnement ${{ github.event.inputs.Environment }}
+          Write-warning "Feed : https://www.myget.org/gallery/ottomatt  or https://www.myget.org/gallery/devottomatt""
