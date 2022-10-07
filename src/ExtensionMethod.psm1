@@ -8,16 +8,12 @@
 #
 
 #<DEFINE %DEBUG%>
-$Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
+$Script:lg4n_ModuleName=[log4net.GlobalContext]::Properties["LogJobName"]=$MyInvocation.MyCommand.ScriptBlock.Module.Name
+#todo add xml file
+#todo build debug add directory
+#[log4net.GlobalContext]::Properties["ApplicationLogPath"]="$PSScriptRoot\Logs"
+#Initialize-Log4Net -RepositoryName $Script:lg4n_ModuleName -XmlConfigPath "$PSScriptRoot\Log4Net.Config.xml"
 
-  #This code create the following variables : $script:DebugLogger, $script:InfoLogger, $script:DefaultLogFile
-$InitializeLogging=[scriptblock]::Create("${function:Initialize-Log4NetModule}")
-$Params=@{
-  RepositoryName = $Script:lg4n_ModuleName
-  XmlConfigPath = "$psScriptRoot\ExtensionMethodLog4Posh.Config.xml"
-  DefaultLogFilePath = "$psScriptRoot\Logs\${Script:lg4n_ModuleName}.log"
-}
-&$InitializeLogging @Params
 #<UNDEF %DEBUG%>
 
 
