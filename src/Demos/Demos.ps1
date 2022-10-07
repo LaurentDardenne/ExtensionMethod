@@ -28,7 +28,7 @@ $ScriptMethods=$ExtensionMethodInfos.GetEnumerator() | New-ExtensionMethodType
  }
 }
 
-$code.Ast.EndBlock.BlockKind|gm -MemberType scriptMethod
+$code.Ast.EndBlock.BlockKind|Get-Member -MemberType scriptMethod
  #HasTrait is a extension method, $TypesFileName contains its wrapper
 $code.Ast.EndBlock.BlockKind.HasTrait('MemberName')
 
@@ -36,7 +36,7 @@ $code.Ast.EndBlock.BlockKind.HasTrait('MemberName')
 return
 # !!!! This example need a specific dll.
 
-cd $env:Temp
+Set-Location $env:Temp
 nuget install Z.ExtensionMethods
 
 $AssemblyPath="$env:Temp\Z.ExtensionMethods.2.0.10\lib\net45\Z.ExtensionMethods.dll"
