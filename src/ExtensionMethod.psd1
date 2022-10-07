@@ -12,7 +12,7 @@
 RootModule = 'ExtensionMethod.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4.0'
+ModuleVersion = '1.5.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -53,9 +53,10 @@ Description = 'Creation of ps1xml file dedicated to the extension methods contai
 #<DEFINE %DEBUG%>
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules=@(
-  @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="2.2.0"}
+  @{ModuleName="Log4Posh";GUID="f796dd07-541c-4ad8-bfac-a6f15c4b06a0"; ModuleVersion="3.0.5"} #todo 3.0.6
+  @{ModuleName="UncommonSense.PowerShell.TypeData";GUID="eb90261b-fbaa-4b20-85ae-2fc44dc0b7de"; ModuleVersion="1.2.1.40"}
 )
-#<UNDEF %DEBUG%> 
+#<UNDEF %DEBUG%>
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -70,19 +71,17 @@ RequiredModules=@(
 # FormatsToProcess = @()
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @(
-  "UncommonSense.PowerShell.TypeData\UncommonSense.PowerShell.TypeData.psd1"
-)
+#NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
 	'New-HashTable',
 	'Find-ExtensionMethod',
-    'Format-TableExtensionMethod',
+   'Format-TableExtensionMethod',
 	'Test-ClassExtensionMethod',
 	'Get-ExtensionMethodInfo',
-    'New-ExtensionMethodType',
-    'New-ExtendedTypeData'
+  'New-ExtensionMethodType',
+  'New-ExtendedTypeData'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -109,7 +108,7 @@ PrivateData = @{
     PSData = @{
 
          # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Extension','Method','ETS','ps1xml','type','extended','system','ets','add-member','update-typedata','ps1xml')
+        Tags = @('Extension','Method','ETS','ps1xml','type','extended','system','add-member','update-typedata','ps1xml')
 
          # A URL to the license for this module.
         LicenseUri = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
@@ -121,7 +120,7 @@ PrivateData = @{
         #IconUri = ''
 
          # ReleaseNotes of this module
-        #ReleaseNotes = ''  #todo
+        #ReleaseNotes = ''
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable

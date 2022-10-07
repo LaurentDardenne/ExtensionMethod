@@ -1,18 +1,11 @@
 ﻿#ExtensionMethod.psm1
-
-#todo : http://extensionmethod.net/csharp
-#todo : [Linq.Enumerable]::Sum([int[]]($this.Compteur))
-#si le premier paramètre est de type IEnumerable un cast peut suffire
-# public static int Sum(	this IEnumerable<int> source)
-
-#Fonctions d'aide à la création de fichier ps1xml dédié aux
-# méthodes d'extension contenues dans un fichier assembly dotnet.
+#Help functions for the creation of ps1xml file dedicated to
+# extension methods contained in an assembly file dotnet.
 #
+
 #From an idea of Bart De Smet's :
 # http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx
 #
-#doc: https://msdn.microsoft.com/en-us/library/dd878306(v=vs.85).aspx
-
 
 #<DEFINE %DEBUG%>
 $Script:lg4n_ModuleName=$MyInvocation.MyCommand.ScriptBlock.Module.Name
@@ -29,52 +22,51 @@ $Params=@{
 
 
 function Find-ExtensionMethod{
-  #Recherche et renvoi les méthodes d'extension contenu dans le type $Type.
-  #On ne traite que les méthodes statiques publiques des types qui sont scéllés, non-générique et non-imbriqués.
-  # Spec C# 3.0 :
-  #   Lorsque le premier paramètre d'une méthode inclut le modificateur this, la méthode est dite méthode d'extension.
-  #   Les méthodes d'extension ne peuvent être déclarées que dans des classes statiques non génériques non imbriquées.
-  #   Le premier paramètre d'une méthode d'extension ne peut pas comporter de modificateurs autres que this, et le type
-  #   de paramètre ne peut être un type pointeur.
-
+ #Find and return the extension methods contained in the type $Type.
+ #Only process public static methods of types that are sealed, non-generic, and non-nested.
+  # C# 3.0 specifications :
+   # When the first parameter of a method includes the 'this' modifier, the method is called an extension method.
+   # Extension methods can only be declared in non-generic, non-nested static classes.
+   # The first parameter of an extension method cannot have modifiers other than this, and the type
+   # of parameter cannot be a pointer type.
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
    [System.Type] $Type,
 
-     #Ne renvoi pas les méthodes d'extension des types génériques, car ces types nécessiteraient,
-     #dans le fichier ps1xml, une déclaration pour chaque type utilisé lors du paramètrage de la classe :
+     #Do not return extension methods of generic types, as these types would require,
+     # in the ps1xml file, a declaration for each type used when setting up the class:
      #  Class<String>, MyClass<Int>, etc
      # Add-Type -path "$Path\$AssemblyName.dll" -Pass|GetExtensionMethods -ExcludeGeneric
    [switch] $ExcludeGeneric
  )
 
   process {
-     #Filtre les types publics qui sont scéllés, non-générique et non-imbriqués.
-     #Les classes statiques possédent les attributs abstract et Sealed, ce dernier est placé sur
-     # le type lors de la compilation (il n'est pas déclaré dans le code source)
+     #Filter public types that are sealed, non-generic, and non-nested.
+     #Static classes have abstract and Sealed attributes, the latter is placed on
+     # the type at compile time (it is not declared in the source code)
    $Type|
     Where-Object {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
     Foreach-Object {
-        #recherche uniquement les méthodes statique publiques
+        #search only public static methods
        $_.GetMethods(([System.Reflection.BindingFlags]"Static,Public"))|
-         #Filtre les méthodes d'extension.
-         # Note: en C# l'attribut ExtensionAttribute est défini par le compilateur.
+         #Filter extension methods.
+         # Note: in C# the ExtensionAttribute attribute is defined by the compiler.
         Where-Object {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}|
         Foreach-Object {
-           #on renvoi toutes les méthodes
+           #Return all methods
           if ($ExcludeGeneric -eq $False)
            {$_}
-           #on renvoi toutes les méthodes sauf les méthodes génériques.
+           #Return all methods except generic methods.
           elseif ($_.IsGenericMethod -eq $false)
            {$_}
        }
     }
   }
-} #Find-ExtensionMethod
+}
 
 function Test-ClassExtensionMethod([System.Type] $Type)
-{ #Détermine si le type $Type contient des méthodes d'extension.
+{ #Determines if the $Type type contains extension methods.
   #
   @($Type|
     Where-Object {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
@@ -82,7 +74,7 @@ function Test-ClassExtensionMethod([System.Type] $Type)
        $_.GetMethods(([System.Reflection.BindingFlags]"Static,Public"))|
         Where-Object {$_.IsDefined([System.Runtime.CompilerServices.ExtensionAttribute], $false)}
     }).count -gt 0
-}#Test-ClassExtensionMethod
+}
 
 function AddMembers{
  #Add to a MethodInfo the following members : ParameterCount,CountOptional,isContainsParams
@@ -108,9 +100,9 @@ function AddMembers{
 }#AddMembers
 
 function Get-ExtensionMethodInfo{
-  #Renvoi, à partir d'informations d'une méthode d'extension, un objet DictionaryEntry dont :
-  #       la clé est le type du premier paramètre, déclaré dans la signature de la méthode (le type peut être une type imbriqué),
-  #       la valeur est une méthode d'extension rattachée à ce même type.
+  #Returns, from information from an extension method, a DictionaryEntry object with:
+  # the key is the type of the first parameter, declared in the method signature (the type can be a nested type),
+  # the value is an extension method attached to that same type.
   Param (
      [ValidateNotNull()]
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
@@ -118,30 +110,30 @@ function Get-ExtensionMethodInfo{
 
       #todo : redondant si Find-ExtensionMethod -ExcludeGeneric  ?
 
-      # $ExcludeGeneric :  Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type générique,
-      #                    car le nom de la méthode nécessiterait, dans le fichier ps1xml, une déclaration pour chaque type
-      #                    utilisé lors du paramètrage de la méthode :
-      #                      MyClass.MaMethod<DateTimefull strong name ...>, MyClass.MaMethod<Double full strong name ...>, etc
+      # $ExcludeGeneric: Do not return extension methods whose first parameter type is a generic type,
+      #                  because the method name would require, in the ps1xml file, a declaration for each type
+      #                  used when setting up the method:
+      #                   MyClass.MyMethod<DateTimefull strong name ...>, MyClass.MyMethod<Double full strong name ...>, etc
     [switch] $ExcludeGeneric,
 
-      # $ExcludeInterface : Ne renvoi pas les méthodes d'extension dont le type du premier paramètre est un type interface.
-      #                     PowerShell ne sait pas 'extraire' une interface particulière à partir d'un objet.
-      #                     De plus les objets de type IEnumerable sont transformés en System.Array par PowerShell...
+      # $ExcludeInterface: Don't return extension methods whose first parameter type is an interface type.
+      #                    PowerShell doesn't know how to 'extract' a particular interface from an object.
+      #                    In addition, objects of type IEnumerable are transformed into System.Array by PowerShell...
     [switch] $ExcludeInterface
   )
 
  process {
-     #Le premier paramètre de la méthode détermine le type sur lequel on déclare la méthode d'extension.
-     #En C# c'est le rôle du mot clé 'this'.
-     #Une méthode d'extension a au moins 1 paramètre qui est le type auquel associer la méthode.
+     #The first parameter of the method determines the type on which we declare the extension method.
+     #In C# this is the role of the 'this' keyword.
+     #An extension method has at least 1 parameter which is the type to associate the method with.
     $Parameter=($MethodInfo.GetParameters())[0]
     if (!($Parameter.ParameterType.IsInterface -and $ExcludeInterface))
     {
-       #Si -ExcludeGeneric est précisé on ne traite pas les types génériques
+       #If -ExcludeGeneric is specified, generic types are not processed
        #
-       #ContainsGenericParameters :
-       # renvoie true si l'objet Type est lui-même un paramètre de type générique ou a des paramètres
-       # de type pour lesquels les types spécifiques n'ont pas été fournis; sinon, false.
+       #ContainsGenericParameters:
+       # returns true if the Type object is itself a generic type parameter or has parameters
+       # of types for which specific types were not provided; otherwise, false.
       if (!( $ExcludeGeneric -and
            ($Parameter.ParameterType.IsGenericType -or
             $Parameter.ParameterType.ContainsGenericParameters
@@ -149,18 +141,18 @@ function Get-ExtensionMethodInfo{
          ))
       {
         $MethodInfo= AddMembers -CurrentMethod $_
-        #Pas d'exclusion demandée ou le type n'est pas générique.
-         #On renvoi une paire clé/valeur avec le type du premier paramètre et l'objet méthode
+         #No exclusion requested or the type is not generic.
+         #We return a key/value pair with the type of the first parameter and the method object
         new-object System.Collections.DictionaryEntry(
-                                         #la clé est le nom du type du premier paramètre de l'objet méthode
+                                         #The key is the type name of the first parameter of the method object
                                        ($Parameter.ParameterType.ToString()),
-                                         #la valeur est l'objet méthode
+                                         #The value is the method object
                                         $MethodInfo
                                       )
-      } #if ExcludeGeneric
-    } #if ExcludeInterface
- }#process
-} #Get-ExtensionMethodInfo
+      }
+    }
+ }
+}
 
 Function New-HashTable {
    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
@@ -218,12 +210,12 @@ param(
 }#New-HashTable
 
 function Format-TableExtensionMethod{
- #Affiche sur la console, à partir d'une hashtable, la liste des méthodes d'extension regroupées par type.
- #Wrapper spécialisé du cmdlet Format-Table.
+ #Display on the console, from a hashtable, the list of extension methods grouped by type.
+ #Specialized wrapper of the Format-Table cmdlet.
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-     #Contient des méthodes d'extension reroupées par nom de type.
+     #Contains extension methods grouped by type name.
     [System.Collections.HashTable] $Hashtable
  )
 process {
@@ -235,7 +227,7 @@ process {
   }|
   Format-Table @{Label="Method";Expression={ $_.ToString()}} -GroupBy InstanceType
 }
-}#Format-TableExtensionMethod
+}
 
 Function Get-ParameterComment {
 # need dotNET 4.5 -> ps v4 and >
@@ -311,13 +303,13 @@ Function New-ExtensionMethodType{
  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="New-ExtensionMethodType do not change the system state.")]
 
-#Renvoi un ou des objets contenant la définition d'un type ETS déclarant ou ou plusieus membre de type ScriptMethod
+#Returns one or more objects containing the definition of an ETS type declaring or or several members of type ScriptMethod
  [CmdletBinding()]
  [OutputType([UncommonSense.PowerShell.TypeData.Type])]
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-   # DictionaryEntry contenant les méthodes d'extension d'une classe,
+   # DictionaryEntry containing extension methods of a class
  [System.Collections.DictionaryEntry] $Entry
  )
 begin {
@@ -398,8 +390,8 @@ begin {
       {
         $Script=New-Object System.Text.StringBuilder " switch (`$args.Count) {`r`n"
 
-         #contient les numéros de section du switch associé à une méthode.
-         #Le numéros de section est le nombre de paramètres de chaque signature
+         #Contains the section numbers of the switch associated with a method.
+         #The section number is the number of parameters of each signature
         $SwitchSections= [System.Collections.Generic.HashSet[String]]::new()
 
           #Only one line is created for overloaded methods using the same number of parameters.
@@ -424,25 +416,26 @@ begin {
             }
             [int]$ParameterCount=$Method.Name
             $SwitchSections.Add($ParameterCount)>$null
-                #On soustrait 1 à $ParameterCount pour créer un décalage :
+                #We subtract 1 from $ParameterCount to create an offset:
                 #    0=$this                    -> $Objet.Method()                 -> [Type]::Method($this)
                 #    1=$this,$args[0]           -> $Objet.Method($Param1)          -> [Type]::Method($this,$args[0])
                 #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)  -> [Type]::Method($this,$args[0],$args[1])
                 #
-                # Le décalage sur le nombre de paramètres est dû au fait que l'on doit prendre en charge
-                # le modificateur C# this, qui est égal à $this dans un script de méthode PowerShell, celui-ci
-                # n'est pas précisé lors de l'appel de la méthode PowerShell.
+
+                # The lag on the number of parameters is due to the fact that one has to support
+                # the C# modifier 'this', which is equal to $this in a PowerShell method script, this
+                # is not specified when calling the PowerShell method.
                 #
-                #On construit plusieurs lignes respectant la syntaxe d'appel d'une méthode d'extension( méthode statique) :
-                #  nb_argument  { [TypeName]::MethodName($this, 0..n arguments) }
+                #We build several lines respecting the call syntax of an extension method (static method):
+                # nb_argument { [TypeName]::MethodName($this, 0..n arguments) }
                 #
-                #Note : Si un paramétre est ByRef c'est l'appelant qui le déclare [ref] sur la variable utilisée et PS le propage à la méthode d'extension
+                #Note: If a parameter is ByRef, the caller declares it [ref] on the variable used and PS propagates it to the extension method
 
              #switch clause for ($ParameterCount-1) $Args
             foreach ( $MethodToComment in $Method.Group)
             {
                #Add all method signatures with the same number of parameters
-               #todo :     s'il existe pas dans le groupe une méthode avec le même nb de param on ne l'ajoute pas celle avec params
+               #todo :     s'il existe pas dans le groupe une méthode avec le même nombre de paramètre on ne l'ajoute pas celle avec params
                #           s'il n'existe pas une méthode avec param +1
               $Script.Append( ("`t`t`t`t $(Get-ParameterComment -Method $MethodToComment)")) >$null
             }
@@ -455,24 +448,24 @@ begin {
             }
             #close method call
             $Script.Append(") }`r`n`r`n") >$null
-        }#foreach $Method
+        }
 
         AddSwitchClauseForMethodWithParams -ScriptBuilder $Script -MaxSignatureWithParamsKeyWord $MaxSignatureWithParams
 
          #Add default switch clause
         $Script.Appendline( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $MethodName) ) >$null
 
-          #Add end of switch
+         #Add end of switch
         $Script.Appendline('   }') >$null
 
         Write-Debug "`tWrite ScriptMethod '$($MethodName)'"
         Write-debug "`tscript: $Script"
         New-ScriptMethod -Name $MethodName -Script $Script
-      } #else
-     } #foreach $GroupMethods
-   } #New-Type
- } #process
-} #New-ExtensionMethodType
+      }
+     }
+   }
+ }
+}
 
 <#
 todo scénario de construction -> on doit ajouter des cas dans le switch selon la déclaration de méthode
@@ -636,9 +629,9 @@ function New-ExtendedTypeData {
          else
          { Set-Content -Value $TypeData -Path $FileName -Encoding UTF8 -Confirm:$false}
        }
-      }#ShouldProcess
-    }#WriteDatas
-  }#begin
+      }
+    }
+  }
 
   End {
     if ($PSCmdlet.MyInvocation.ExpectingInput)
@@ -659,6 +652,7 @@ function New-ExtendedTypeData {
     if ($All)
     {
       $ScriptMethods=$Result.GetEnumerator() | New-ExtensionMethodType
+      #todo Add at the begining of the xml file : "Generated by https://github.com/LaurentDardenne/ExtensionMethod version x.y.z'"
       $EtsDatas=New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
          $ScriptMethods
        }
@@ -668,21 +662,22 @@ function New-ExtendedTypeData {
     {
       $Result.GetEnumerator() |
        Foreach-Object {
-          #possible : System.Object[].ps1xml
+          #Possible : System.Object[].ps1xml
           $LiteralPath ="{0}\{1}.ps1xml" -F $FileInfo.DirectoryName,$_.Key
           $ScriptMethod=New-ExtensionMethodType -Entry $_
           Write-Verbose "Create '$FileName'"
+          #todo Add at the begining of the xml file : "Generated by https://github.com/LaurentDardenne/ExtensionMethod version x.y.z'"
           $EtsDatas= New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
              $ScriptMethod
            }
           WriteDatas -FileName $LiteralPath -TypeData $EtsDatas -isLiteral
-       }#foreach
-    }#else
- }#end
-}#New-ExtendedTypeData
+       }
+    }
+ }
+}
 
 #<DEFINE %DEBUG%>
-# Suppression des objets du module
+# Deleting Module Objects
 Function OnRemoveExtensionMethod {
   Stop-Log4Net $Script:lg4n_ModuleName
 }#OnRemoveExtensionMethod
