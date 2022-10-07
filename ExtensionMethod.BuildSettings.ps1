@@ -282,7 +282,7 @@ $ProjectName= 'Extensionmethod'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $SrcRootDir  = "$PSScriptRoot\Src"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$TestRootDir = "$PSScriptRoot\Test"
+$TestRootDir = "$PSScriptRoot\Tests"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $DocsRootDir = "$PSScriptRoot\Docs"
 
