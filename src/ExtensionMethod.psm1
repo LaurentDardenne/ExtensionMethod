@@ -7,15 +7,6 @@
 # http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx
 #
 
-#<DEFINE %DEBUG%>
-$Script:lg4n_ModuleName=[log4net.GlobalContext]::Properties["LogJobName"]=$MyInvocation.MyCommand.ScriptBlock.Module.Name
-#todo add xml file
-#todo build debug add directory
-#[log4net.GlobalContext]::Properties["ApplicationLogPath"]="$PSScriptRoot\Logs"
-#Initialize-Log4Net -RepositoryName $Script:lg4n_ModuleName -XmlConfigPath "$PSScriptRoot\Log4Net.Config.xml"
-
-#<UNDEF %DEBUG%>
-
 
 function Find-ExtensionMethod{
  #Find and return the extension methods contained in the type $Type.
@@ -688,13 +679,5 @@ function New-ExtendedTypeData {
  }
 }
 
-#<DEFINE %DEBUG%>
-# Deleting Module Objects
-Function OnRemoveExtensionMethod {
-  Stop-Log4Net $Script:lg4n_ModuleName
-}#OnRemoveExtensionMethod
-
-$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { OnRemoveExtensionMethod }
-#<UNDEF %DEBUG%>
 
 
