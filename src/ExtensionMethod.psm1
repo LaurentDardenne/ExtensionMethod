@@ -217,7 +217,8 @@ function Format-TableExtensionMethod{
 process {
   $Hashtable.GetEnumerator()|
   Foreach-Object {
-    $InstanceType=$_.Key;$_.Value|
+    $InstanceType=$_.Key;
+    $_.Value|
       Sort-Object $_.ParameterCount|
       Add-Member NoteProperty InstanceType $InstanceType -pass
   }|
