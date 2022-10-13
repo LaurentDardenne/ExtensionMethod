@@ -6,7 +6,10 @@ $TypesFileName="System.Management.Automation.Language.TokenKind.Types.ps1xml"
 $FileName=Join-path -Path $Filepath -ChildPath $TypesFileName
 Write-Warning "Generate file '$FileName'"
 
+ #Generic METHODS are excluded
 $Types=[psobject].Assembly.ExportedTypes|Find-ExtensionMethod -ExcludeGeneric
+
+ #We exclude methods with generic PARAMETERS
 $ExtensionMethodInfos=$Types|
       Get-ExtensionMethodInfo -ExcludeGeneric -ExcludeInterface|
       New-HashTable -key "Key" -Value "Value" -MakeArray
