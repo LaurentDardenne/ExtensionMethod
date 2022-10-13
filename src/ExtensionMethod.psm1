@@ -70,20 +70,29 @@ function AddMembers{
  #  isContainsParams= $true when a parameter is 'params'
   param($CurrentMethod)
 
- $CountOptional=$Count=0
- $isContainsParams=$false
- foreach ($CurrentParameter in $CurrentMethod.GetParameters())
+  #We modify the properties of a Runtimetype object which remains loaded in memory,
+  #during a second call on the same type the members already exist.
+ $Result=$CurrentMethod.PSObject.Properties.Match('ParameterCount')
+ if ($Result.Count -eq 0)
  {
-   $Count++
-   if ($isContainsParams -eq $false)
-   { $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0 }
-   if ($CurrentParameter.isOptional)
-   { $CountOptional++ }
+  $CountOptional=$Count=0
+  $isContainsParams=$false
+  foreach ($CurrentParameter in $CurrentMethod.GetParameters())
+  {
+    $Count++
+    if ($isContainsParams -eq $false)
+    { $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0 }
+    if ($CurrentParameter.isOptional)
+    { $CountOptional++ }
+  }
+  Add-Member -inputobject $CurrentMethod -membertype NoteProperty -name ParameterCount -value $Count -passthru|
+    Add-Member -membertype NoteProperty -name CountOptional -value $CountOptional -passthru|
+    Add-Member -membertype NoteProperty -name isContainsParams -value $isContainsParams
  }
- Add-member -inputobject $CurrentMethod -membertype NoteProperty -name ParameterCount -value $Count -passthru|
-   Add-member -membertype NoteProperty -name CountOptional -value $CountOptional -passthru|
-   Add-member -membertype NoteProperty -name isContainsParams -value $isContainsParams
- write-output $CurrentMethod
+ else
+ { Write-Debug "The additionnals members already exist on the method '$($CurrentMethod.Name)'" }
+
+ Write-Output $CurrentMethod
 }#AddMembers
 
 function Get-ExtensionMethodInfo{
