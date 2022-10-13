@@ -559,9 +559,8 @@ $CountArgCreated.Add(4)
 #>
 
 
-#todo construction des blocs a revoir
-#todo PSSA PSUseProcessBlockForPipelineCommand
 function New-ExtendedTypeData {
+  [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseProcessBlockForPipelineCommand', '')]
   #Create an extension file (ETS) containing wrappers of extension methods
  [CmdletBinding(DefaultParameterSetName="Path",SupportsShouldProcess = $true)]
  param(
@@ -643,13 +642,13 @@ function New-ExtendedTypeData {
 
     if ($PSCmdlet.MyInvocation.ExpectingInput)
     {
-       #Data received from pipeline input
+       Write-Debug 'New-ExtendedTypeDat : Data received from pipeline input'
        #In the end block, the $input variable enumerates the collection of all input to the function.
       $Types=$input
     }
     else
     {
-       #Data received from parameter input
+      Write-Debug 'New-ExtendedTypeDat : Data received from parameter $Type'
       $Types=$Type
     }
 
