@@ -16,7 +16,7 @@ $ExtensionMethodInfos|Format-TableExtensionMethod
 $ScriptMethods=$ExtensionMethodInfos.GetEnumerator() | New-ExtensionMethodType
 
 #Use 'UncommonSense.PowerShell.TypeData' command
-Types -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
+New-TypeData -PreContent '<?xml version="1.0" encoding="utf-8"?>' -Types {
   $ScriptMethods
 } > $FileName
 
