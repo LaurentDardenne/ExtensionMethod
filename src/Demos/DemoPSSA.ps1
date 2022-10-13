@@ -1,4 +1,4 @@
-﻿#
+﻿#Extract extension methods from a DLL
 Import-Module PSScriptAnalyzer
 $Filepath=$env:Temp
 $TypesFileName="PSSA.Types.ps1xml"
