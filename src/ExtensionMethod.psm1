@@ -105,8 +105,6 @@ function Get-ExtensionMethodInfo{
      [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
     [System.Reflection.MethodInfo] $MethodInfo,
 
-      #todo : redondant si Find-ExtensionMethod -ExcludeGeneric  ?
-
       # $ExcludeGeneric: Do not return extension methods whose first parameter type is a generic type,
       #                  because the method name would require, in the ps1xml file, a declaration for each type
       #                  used when setting up the method:
@@ -228,7 +226,6 @@ process {
 }
 
 Function Get-ParameterComment {
-# need dotNET 4.5 -> ps v4 and >
 #todo vérifier si toutes les signatures d'une method surchargée sont précisées
  param( $Method )
   $MethodSignature= foreach($Parameter in $Method.GetParameters()) {
