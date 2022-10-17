@@ -660,25 +660,31 @@ function New-ExtendedTypeData {
     $PreContent=Get-PrecontentString
     if ($All)
     {
+
       $ScriptMethods=$Result.GetEnumerator() | New-ExtensionMethodType
       $EtsDatas=New-TypeData -PreContent $PreContent  -Types {
-         $ScriptMethods
-       }
+        $ScriptMethods
+      }
       WriteDatas -FileName $FileInfo -TypeData $EtsDatas -isLiteral:$isLiteral
     }
     else
     {
-      $Result.GetEnumerator() |
-       Foreach-Object {
-          #Possible : System.Object[].ps1xml
-          $LiteralPath ="{0}\{1}.ps1xml" -F $FileInfo.DirectoryName,$_.Key
-          $ScriptMethod=New-ExtensionMethodType -Entry $_
-          Write-Verbose "Create '$FileName'"
-          $EtsDatas= New-TypeData -PreContent $PreContent -Types {
+      If ( ($FileInfo.Attributes.HasFlag([System.IO.FileAttributes]::Directory)) -and $FileInfo.Exist)
+      {
+        $Result.GetEnumerator() |
+        Foreach-Object {
+            #Possible : System.Object[].ps1xml
+           $LiteralPath ="{0}\{1}.ps1xml" -F $FileInfo.DirectoryName,$_.Key
+           $ScriptMethod=New-ExtensionMethodType -Entry $_
+           Write-Verbose "Create '$FileName'"
+           $EtsDatas= New-TypeData -PreContent $PreContent -Types {
              $ScriptMethod
            }
-          WriteDatas -FileName $LiteralPath -TypeData $EtsDatas -isLiteral
-       }
+           WriteDatas -FileName $LiteralPath -TypeData $EtsDatas -isLiteral
+        }
+      }
+      else
+      { throw "The path must be an existing directory name : '$FileInfo'."}
     }
  }
 }
