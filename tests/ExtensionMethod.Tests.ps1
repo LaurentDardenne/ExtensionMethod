@@ -28,15 +28,41 @@ public static partial class Extensions
       Console.WriteLine('2');
       return "2";
     }
+
     public static string Method2(this string S, params object[] parameters)
     {
       Console.WriteLine('3');
       return "3";
     }
 }
-'@
 
-#[Extensions].Assembly.ExportedTypes | New-ExtendedTypeData -Path 'c:\temp\test.ps1xml' -All -Force
+public static partial class ExtensionTo
+{
+   
+  public static string To(this string S)
+  {
+    return "1";
+  }
+
+  public static string To(this string S, int end)
+  {
+    return "2";
+  }
+
+  public static string To(this string S, string end)
+  {
+    return "3";
+  }
+
+  public static string To(this string S, params object[] parameters)
+  {
+    return "4";
+  }
+}
+'@
+ipmo $env:USERPROFILE\Documents\projets\ExtensionMethod\Release\Extensionmethod\ExtensionMethod.psd1  
+[Extensions].Assembly.ExportedTypes | New-ExtendedTypeData -Path 'c:\temp\test.ps1xml' -All -Force
+update-TypeData 'c:\temp\test.ps1xml'
 
 $Types=[Extensions].Assembly.ExportedTypes | Find-ExtensionMethod -ExcludeGeneric
 $ExtensionMethodInfos=$Types |
