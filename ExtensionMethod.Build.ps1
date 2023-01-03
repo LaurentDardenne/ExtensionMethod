@@ -53,7 +53,7 @@ task CoreStageFiles {
 task Build Init, Clean, BeforeBuild, StageFiles, Analyze, BuildHelp, AfterBuild, {
 }
 
-task Actionlint {
+task Actionlint -If ($null -ne (Get-Command gh.exe -EA SilentlyContinue) ) {
 # Linting all workflow files only in  .\.github\workflows directory
 
  if (Get-Command gh.exe)
