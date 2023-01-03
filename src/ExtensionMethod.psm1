@@ -53,9 +53,10 @@ function Find-ExtensionMethod{
   }
 }
 
-function Test-ClassExtensionMethod([System.Type] $Type)
-{ #Determines if the $Type type contains extension methods.
-  #
+function Test-ClassExtensionMethod{
+  #Determines if the $Type type contains extension methods.
+  param ([System.Type] $Type)
+
   @($Type|
     Where-Object {$_.IsPublic -and $_.IsSealed -and $_.IsAbstract -and ($_.IsGenericType -eq $false) -and ($_.IsNested -eq $false)}|
     Foreach-Object {
@@ -66,9 +67,9 @@ function Test-ClassExtensionMethod([System.Type] $Type)
 
 function AddMembers{
  #Add to a MethodInfo the following members : ParameterCount,CountOptional,isContainsParams
- #  ParameterCount= Number of parameter
- #  CountOptional= Number of optional parameter
- #  isContainsParams= $true when a parameter is 'params'
+ #  ParameterCount   = Number of parameter
+ #  CountOptional    = Number of optional parameter
+ #  isContainsParams = $true when a parameter is 'params'
   param($CurrentMethod)
 
   #We modify the properties of a Runtimetype object which remains loaded in memory,
@@ -173,36 +174,37 @@ param(
   { $hash = @{} }
   Process
   {
-       #On définit la clé
+       #We define the key
       $Property = $InputObject.$key
 
-       #On définit la valeur de la clé à partir
-       # du nom de propriété contenue dans $Value
+       #We define the value of the key from
+       # the property name contained in $Value
       if ([String]::IsNullOrEmpty($Value))
       { $Object=$InputObject }
       else
-      { $Object=$InputObject.$Value } #todo test si la clé existe
+      { $Object=$InputObject.$Value }
 
-       #Pas d'écrasement de la clé si elle existe
+       #No overwriting of the key if it exists
       if ($NoOverWrite -And $hash.$Property)
       {  Write-Error "$Property already exists" }
       elseif ($MakeArray)
       {
-         #Il existe plusieurs occurences d'une même clé,
-         # on crée un tableau afin de mémoriser toutes les valeurs
+          #There are several occurrences of the same key,
+          # we create an array in order to memorize all the values
          if (!$hash.$Property)
-         { $hash.$Property = new-object System.Collections.ArrayList }
+         { $hash.$Property = New-Object System.Collections.ArrayList }
          [void]$hash.$Property.Add($Object)
       }
       else
-      {    #Il n'existe qu'une occurence d'une clé
-           #On la remplace si elle existe.
+      {  
+          #There is only one occurrence of a key
+          #We replace it if it exists.
          $hash.$Property = $Object
       }
   }
   End
   { $hash }
-}#New-HashTable
+}
 
 function Format-TableExtensionMethod{
  #Display on the console, from a hashtable, the list of extension methods grouped by type.
@@ -226,7 +228,7 @@ process {
 }
 
 Function Get-ParameterComment {
-#todo vérifier si toutes les signatures d'une method surchargée sont précisées
+#todo vérifier si toutes les signatures d'une methode surchargée sont précisées
  param( $Method )
   $MethodSignature= foreach($Parameter in $Method.GetParameters()) {
 
@@ -235,7 +237,7 @@ Function Get-ParameterComment {
     if ($Parameter.ParameterType.IsByRef)
     {
       Write-Debug " byRef"
-      #[ref] powershell is for 'out' and 'ref' c# parameter modifier
+      #[ref] powershell is for 'out' and 'ref' C# parameter modifier
       $ParameterStatement="[ref] [$($Parameter.ParameterType.GetElementType())]"
     }
     else
@@ -278,7 +280,7 @@ Function Get-ParameterComment {
                Write-Debug "     Numeric"
                $ParameterName +="=$($Parameter.DefaultValue.ToString([System.Globalization.CultureInfo]::InvariantCulture))"
              }
-             #else TODO ? isArray Or IEnumerable
+             #Todo ? else isArray Or IEnumerable
            }
         }#hasDefaultValue
         else
@@ -334,37 +336,37 @@ begin {
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
       $ScriptBuilder.AppendLine('                }') >$null
     }
-  # (voirs les liens ) https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
-  #                    https://stackoverflow.com/questions/23660137/c-sharp-reflective-method-invocation-with-arbitrary-number-of-parameters?noredirect=1&lq=1
-  #                    https://stackoverflow.com/questions/22235490/methodinfo-invoke-throws-exception-for-variable-number-of-arguments?noredirect=1&lq=1
-  #                    https://stackoverflow.com/questions/16777547/invoke-a-method-using-reflection-with-the-params-keyword-without-arguments?noredirect=1&lq=1
+  # See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
+  #           https://stackoverflow.com/questions/23660137/c-sharp-reflective-method-invocation-with-arbitrary-number-of-parameters?noredirect=1&lq=1
+  #           https://stackoverflow.com/questions/22235490/methodinfo-invoke-throws-exception-for-variable-number-of-arguments?noredirect=1&lq=1
+  #           https://stackoverflow.com/questions/16777547/invoke-a-method-using-reflection-with-the-params-keyword-without-arguments?noredirect=1&lq=1
   #
-  #                    https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
+  #           https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
   }
 }#begin
 
-#Pour chaque type, on crée autant de balise <ScriptMethod> que de méthodes recensées.
-#Comme chaque méthode peut être surchargée,  on doit considérer le type de la surcharge,
-# par le nombre de paramètres et par leurs types :
+# For each type, we create as many <ScriptMethod> tags as methods listed.
+# As each method can be overloaded, we must consider the type of the overload,
+# by the number of parameters and by their types:
 #
 #  1- public static string To(this SubStringFrom subStringFrom)
 #  2- public static string To(this SubStringFrom subStringFrom, int end)
 #  3- public static string To(this SubStringFrom subStringFrom, string end)
 #  4- public static string To(this SubStringFrom subStringFrom, string end, bool includeBoundary)
 #
-#On teste le nombre de paramètres pour générer la balise script qui contient le code PowerShell :
+# We test the number of parameters to generate the script tag that contains the PowerShell code:
 #         <Script>
 # 						switch ($args.Count) {
 #            			0 { [Developpez.Dotnet.StringExtensions]::To($this)}
 # 	 							1 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0])}
 # 	 							2 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0] ,$args[1])}
-# 	          default { throw "La méthode To ne propose pas de signature contenant $($args.Count) paramètres." }
+# 	          default { throw "The 'To' method does not provide a signature containing $($args.Count) parameters." }
 #           }
 #         </Script>
 #
-# Dans cet exemple, pour $args.Count = 1 (on ne compte pas $this) on ne doit générer qu'une seule ligne,
-#on laisse le shell invoquer la méthode.
-#Si le nombre de paramètres correspond, mais pas leurs type alors le shell déclenchera une exception.
+# In this example, for $args.Count = 1 (we don't count $this) we must generate only one line,
+# let the shell invoke the method.
+# If the number of parameters match, but their type does not then the shell will raise an exception.
 
  process {
    $TypeName=$Entry.Key
@@ -498,7 +500,7 @@ todo scénario de construction -> on doit ajouter des cas dans le switch selon l
                                                                           #todo c'est le type qui détermine la méthode appeler ?
 
     public static string To(this string S){
-    public static string To(this string S, bool includeBoundary=true){ #todo on doit ordonner le traitemnt des signatures
+    public static string To(this string S, bool includeBoundary=true){ #todo on doit ordonner le traitement des signatures
     public static string To(this string S, int end){
     public static string To(this string S, string end){
     public static string To(this string S, int end, bool includeBoundary=true){
@@ -562,7 +564,9 @@ function New-ExtendedTypeData {
   #Create an extension file (ETS) containing wrappers of extension methods
  [CmdletBinding(DefaultParameterSetName="Path",SupportsShouldProcess = $true)]
  param(
-    #Type to analyze
+    #Type to analyze.
+    # If type is of type string then Powershell attempts a conversion, 
+    # square brackets are not accepted in the type name. Use 'MyType' instead of [MyType].
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
    [System.Type] $Type,
@@ -570,6 +574,7 @@ function New-ExtendedTypeData {
     #Full path of the ps1xml file.
     #if all is specified, one file is created for each type, the path is:
     # DirectoryName + TypeName + .ps1xml
+    #
     #if type name contains '[].ps1xml', by example "System.Byte[].ps1xml", the name becomes "System.Byte.Array.ps1xml"
     [parameter(Mandatory=$True, ParameterSetName="Path")]
     [ValidateNotNullOrEmpty()]
