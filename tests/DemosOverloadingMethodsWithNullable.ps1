@@ -8,7 +8,7 @@ function Get-VariableType {
  param([string]$Name)
   Write-Debug ("Call : {0}" -F $MyInvocation.InvocationName)
   get-variable $name | select -expand attributes | ? {
-      $_.gettype().name -eq "ArgumentTypeConverterAttribute" } | % {
+      $_.gettype().name -eq "ArgumentTypeConverterAttribute" } | ForEach-Object {
       $_.gettype().invokemember("_convertTypes", "NonPublic,Instance,GetField", $null, $_, @())
   }
   Write-Debug ("End : {0}" -F $MyInvocation.InvocationName)
@@ -26,13 +26,13 @@ public static class IntExtensions
         return number.Value +1;
     }
 
-//Si on désactive la méthode suivante, celle avec la méthode avec le type nullable est géré, une variable de type [Int] la sélectionnera également.
-//Si on active la méthode suivante c'est elle (avec le type [Int]) qui est toujours appelée,
-//soit à cause du mécanisme de surcharge de C# soit par une conversion implicite de Powershell
+    //If we comment the following method, then the method with nullable type is handled, a variable of type [Int] will also select it.
+    //If the following method is uncommented, it (with type [Int]) is always called,
+    //either because of C#'s overloading mechanism or an implicit Powershell conversion
 
-//If we deactivate the following method, the one with the method with nullable type is managed, a variable of type [Int] will also select it.
-//If we activate the following method, it is this one (with type [Int]) that is always called,
-//either because of C#'s overloading mechanism or an implicit Powershell conversion
+    //Si on commente la méthode suivante, alors la méthode avec le type nullable est gérée, une variable de type [Int] la sélectionnera également.
+    //Si on décommente la méthode suivante c'est elle (avec le type [Int]) qui est toujours appelée,
+    //soit à cause du mécanisme de surcharge de C# soit par une conversion implicite de Powershell.
 /*
   public static int AddOne(this int number)
     {
