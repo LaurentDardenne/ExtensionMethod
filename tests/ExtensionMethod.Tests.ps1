@@ -36,6 +36,7 @@ public static partial class Extensions
 }
 '@
 
+#[Extensions].Assembly.ExportedTypes | New-ExtendedTypeData -Path 'c:\temp\test.ps1xml' -All -Force
 
 $Types=[Extensions].Assembly.ExportedTypes | Find-ExtensionMethod -ExcludeGeneric
 $ExtensionMethodInfos=$Types |
