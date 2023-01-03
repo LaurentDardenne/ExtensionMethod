@@ -1,12 +1,6 @@
 ﻿Return
 "Under developpment"
 
-
-BUG :
-New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml -Type [MyType.Parser] -All
-New-ExtendedTypeData : Cannot process argument transformation on parameter 'Type'. Cannot convert the
-"[type]" value of type "System.String" to type "System.Type".
-
 BUG :
 New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml -Type 'MyType.Parser' -All
 New-HashTable : The input object cannot be bound to any parameters for the command either because the command does not
