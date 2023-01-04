@@ -28,11 +28,25 @@ public static class IntExtensions
 
     //If we comment the following method, then the method with nullable type is handled, a variable of type [Int] will also select it.
     //If the following method is uncommented, it (with type [Int]) is always called,
-    //either because of C#'s overloading mechanism or an implicit Powershell conversion
+    //either because of C#'s overloading mechanism or an implicit Powershell conversion.
+    //
+    //To force the call a cast is necessary:
+    // [IntExtensions]::Addone([System.Nullable[int]]10)
+    //
+    //But this doesn't work:
+    // [System.Nullable[int]]$i=10
+    // [IntExtensions]::Addone($i)
 
     //Si on commente la méthode suivante, alors la méthode avec le type nullable est gérée, une variable de type [Int] la sélectionnera également.
     //Si on décommente la méthode suivante c'est elle (avec le type [Int]) qui est toujours appelée,
     //soit à cause du mécanisme de surcharge de C# soit par une conversion implicite de Powershell.
+    //
+    //Pour forcer l'appel un cast est nécessaire :
+    //  [IntExtensions]::Addone([System.Nullable[int]]10)
+    //
+    //Mais ceci ne fonctionne pas :
+    // [System.Nullable[int]]$i=10
+    // [IntExtensions]::Addone($i)
 /*
   public static int AddOne(this int number)
     {
