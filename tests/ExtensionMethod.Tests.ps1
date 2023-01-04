@@ -1,6 +1,12 @@
 ﻿Return
 "Under developpment"
 
+si la classe n'existe pas la compiler 
+extraire les méthodes compter le nombre
+charger le fichier généré
+appeler la méthode tester le résultat afin 
+  de connaitre la résolution de méthode selon le type de param
+
 BUG :
 New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml -Type 'MyType.Parser' -All
 New-HashTable : The input object cannot be bound to any parameters for the command either because the command does not
@@ -9,6 +15,22 @@ take pipeline input or the input and its properties do not match any of the para
 
 
 ---------
+ #redirect stdOut
+
+$Writer = [System.IO.StreamWriter]::new("$HOME\DemoLog.txt")
+$Writer.AutoFlush = $true
+$OriginalOut = [System.Console]::Out
+try
+{
+    [System.Console]::SetOut($Writer)
+    $a=[BasicTest]::my('tt')
+}
+finally
+{
+    [System.Console]::SetOut($OriginalOut)
+    $Writer.Close()
+}
+----
 
 Add-type -TypeDefinition @'
 //https://csharp-extension.com/en/method/1002258/datetime-isfuture
@@ -34,6 +56,10 @@ public static partial class Extensions
       Console.WriteLine('3');
       return "3";
     }
+    public static string Foo1(this string S, DateTime dt=default(DateTime))
+    {
+        return string.Empty;
+    }    
 }
 
 public static partial class ExtensionTo
