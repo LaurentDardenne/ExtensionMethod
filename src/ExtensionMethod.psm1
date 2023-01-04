@@ -236,7 +236,7 @@ Function Get-ParameterComment {
     Write-Debug "$ParameterName"
     if ($Parameter.ParameterType.IsByRef)
     {
-      Write-Debug " byRef"
+      Write-Debug " byRef, out parameter"
       #[ref] powershell is for 'out' and 'ref' C# parameter modifier
       $ParameterStatement="[ref] [$($Parameter.ParameterType.GetElementType())]"
     }
