@@ -83,7 +83,10 @@ function AddMembers{
   {
     $Count++
     if ($isContainsParams -eq $false)
-    { $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0 }
+    { 
+      #todo see https://github.com/PowerShell/PowerShell/blob/4f57804f468c5ad47001708014d8989eac3043bc/src/System.Management.Automation/engine/CoreAdapter.cs#L2203
+      $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0 
+    }
     if ($CurrentParameter.isOptional)
     { $CountOptional++ }
   }
