@@ -335,7 +335,7 @@ begin {
       #todo params peut ne pas être renseigné dans l'appel, dans ce cas
       # on a {1} {{ [Object[]]`$Params=@(`$this {0})" -f "$Arguments",($Max-2))
       #Si le cas ($Max-2) Args.Count n'existe pas
-      $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{1}..`$args.count-1]))" -f "$Arguments",($Max-2)) ) >$null
+      $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{1}..(`$args.count-1)]))" -f "$Arguments",($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
       $ScriptBuilder.AppendLine('                }') >$null
     }
