@@ -10,7 +10,7 @@ using System.Reflection;
       F2 = 2
   }
 
-  public enum myColors
+  public enum MyColors
   {
       Red,
       Green,
@@ -20,11 +20,11 @@ using System.Reflection;
 
   public static class Helper
   {
-    public static void WriteSignature(MethodBase mi) 
-    { 
+    public static void WriteSignature(MethodBase mi)
+    {
         string S=mi.ToString();
-        Console.WriteLine(S); 
-    } 
+        Console.WriteLine(S);
+    }
   }
 
   public static class BasicTest
@@ -32,31 +32,31 @@ using System.Reflection;
 
     public static int My(this string S){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 1; 
+        return 1;
     }
     public static int My(this string S, int end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 2; 
+        return 2;
     }
     public static int My(this string S, string end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 3; 
+        return 3;
     }
   }
-  
+
   public static class Optionnal
   {
     public static int My(this string S){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 1; 
+        return 1;
     }
     public static int My(this string S, int end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 2; 
+        return 2;
     }
     public static int My(this string S, string end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 3; 
+        return 3;
     }
 
      //https://stackoverflow.com/questions/37894416/why-does-c-sharp-allow-ambiguous-function-calls-through-optional-arguments
@@ -68,7 +68,7 @@ using System.Reflection;
 
     public static int My(this string S, int end, bool includeBoundary=true){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 4; 
+        return 4;
     }
    }
 
@@ -78,29 +78,29 @@ using System.Reflection;
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         str2m="set by method";
-        return 1; 
+        return 1;
     }
 
     public static int MethodWithOutParam( this string S ,out string str2m)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         str2m="set by method";
-        return 2; 
+        return 2;
     }
 
      //Change type of S parameter :
-      //The in, ref, and out keywords are not considered part of the method signature for the purpose of overload resolution. 
-      //Therefore, methods cannot be overloaded if the only difference is that one method takes a ref or in argument and 
+      //The in, ref, and out keywords are not considered part of the method signature for the purpose of overload resolution.
+      //Therefore, methods cannot be overloaded if the only difference is that one method takes a ref or in argument and
       //the other takes an out argument.
     public static int MethodWithOutParam( this int S, ref string str2m)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 3; 
+        return 3;
     }
    }
 
    public static class DefaultWithVariousType
-   {   
+   {
     public static bool Func1(this string S, bool isvalid = true) {
         return isvalid;
     }
@@ -109,7 +109,7 @@ using System.Reflection;
         return f;
     }
 
-    public static myColors FColors(this string S, myColors color=myColors.Red) {
+    public static MyColors FColors(this string S, MyColors color=MyColors.Red) {
         return color;
     }
 
@@ -137,10 +137,10 @@ using System.Reflection;
    }
 
    public static class ParamsKeyWord
-   {   
-     
-    
-   
+   {
+
+
+
     public static int ArrayOfParams(this string S, int i)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
@@ -167,24 +167,24 @@ using System.Reflection;
         return 4;
     }
     */
-    
+
      //Note : appel possible ArrayOfParams('S',1,2) parameters est un tableau vide
      // Déclare le cas {$_ -gt NbArgs }
      // todo ? Déclare le cas {$_ -gt NbArgs } et {$_ -eq NbArgs }
+    //CS0111	Le type 'ParamsKeyWord' définit déjà un membre appelé 'ArrayOfParams' avec les mêmes types de paramètre	TestExtension
+/*
     public static int ArrayOfParams(this string S, int i, int j, params object[] parameters)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 5;
     }
-
-    //
-
+*/
 
     public static int ArrayOfParams(this string S, int i, int j=5, params object[] parameters)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 6;
-    }  
+        return 5;
+    }
    }
 
    public static class DefaultKeyWord
