@@ -9,9 +9,9 @@ using System;
     //En cas de surcharge le compilateur appel tjr la méthode déclarant le plus de paramètres
     //la méthode déclarant un paramètre de type params est appelé en dernier et s'il n'y a pas d'ambiguité
     //On suppose une seule surcharge avec 'params' et qu'elle est déclarée en dernier
-    //Mixer ce type de déclaration est possible mais de déterminer quelle méthode sera appelée est confus.  
+    //Mixer ce type de déclaration est possible mais de déterminer quelle méthode sera appelée est confus.
 
-  public static class BasicTest
+  public static class TestOptionalAndParams
   {
     public static string ArrayOfParams(this string S, int i)
     {
@@ -29,46 +29,79 @@ using System;
      //
      // https://msdn.microsoft.com/en-us/library/ms182135.aspx
      // CA1026: Default parameters should not be used
-     //https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1026-default-parameters-should-not-be-used?view=vs-2017  
+     //https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1026-default-parameters-should-not-be-used?view=vs-2017
 
     public static string ArrayOfParams(this string S, int i, int j=10, params object[] parameters)
     {
         return "(this string S, int i, int j=10, params object[] parameters)";
-    }    
+    }
   }
 "@
 
 Add-Type -TypeDefinition $source
 
+[TestOptionalAndParams].Assembly.ExportedTypes | New-ExtendedTypeData -Path c:\temp\All.ps1xml -All
+Update-TypeData -PrependPath c:\temp\All.ps1xml
+
+'s'.ArrayOfParams(1,2)
+#Exception lors de l'appel de «ArrayOfParams» avec «2» argument(s): «L'index se trouve en dehors des limites du tableau.»
+
+'s'.ArrayOfParams(1,@(2))
+#(this string S, int i, params object[] parameters)
+'s'.ArrayOfParams(1,5,@(2))
+#(this string S, int i, int j=10, params object[] parameters)
+'s'.ArrayOfParams(1,@(2),1)
+#(this string S, int i, params object[] parameters)
+
 [Object[]]$Params=@('Test',1)
-[BasicTest]::ArrayOfParams.Invoke($Params)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 #OK (this string S, int i)
 
 [Object[]]$Params=@('Test',1,@('1'))
-[BasicTest]::ArrayOfParams.Invoke($Params)
-(this string S, int i, params object[] parameters)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+#(this string S, int i, params object[] parameters)
 
 [Object[]]$Params=@('Test',1,5,@(2))
-[BasicTest]::ArrayOfParams.Invoke($Params)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 #(this string S, int i, int j=10, params object[] parameters)
 
 #BUT
 [Object[]]$Params=@('Test',1,'s',@(2))
-[BasicTest]::ArrayOfParams.Invoke($Params)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 #(this string S, int i, params object[] parameters)
 
 [Object[]]$Params=@('Test',1,2)
 #[Object[]]$Params=@('Test',1,'Str')
 #[Object[]]$Params=@('Test',1,$null)
-[BasicTest]::ArrayOfParams.Invoke($Params)
-# !!!!!!! Exception 
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+# !!!!!!! Exception
 
 [Object[]]$Params=@('Test',1,$null,$null)
 #[Object[]]$Params=@('Test',1,@())
-[BasicTest]::ArrayOfParams.Invoke($Params)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 #(this string S, int i, params object[] parameters)
 
 [Object[]]$Params=@('Test',1,1,$null)
-[BasicTest]::ArrayOfParams.Invoke($Params)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 #(this string S, int i, int j=10, params object[] parameters)
 
+[Object[]]$Params=@('Test',1,'1',$null)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+# !!!! Le type du second paramètre influence la sélection de la methode
+#(this string S, int i, params object[] parameters)
+
+[Object[]]$Params=@('Test',1,'1',3,4,5)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+#(this string S, int i, params object[] parameters)
+
+[Object[]]$Params=@('Test',1,1,3,4,5)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+#(this string S, int i, params object[] parameters)
+
+[Object[]]$Params=@('Test',1,1,3)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+#(this string S, int i, int j=10, params object[] parameters)
+
+ [Object[]]$Params=@('Test',1,1,3,4)
+[TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
+#(this string S, int i, params object[] parameters)
