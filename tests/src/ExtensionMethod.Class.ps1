@@ -136,9 +136,21 @@ using System.Reflection;
     }
    }
 
+
+
    public static class ParamsKeyWord
    {
 
+     //Note : appel possible ArrayOfParams('S',1,2) parameters est un tableau vide
+     // Déclare le cas {$_ -gt NbArgs }
+     // todo ? Déclare le cas {$_ -gt NbArgs } et {$_ -eq NbArgs }
+     //CS0111	Le type 'ParamsKeyWord' définit déjà un membre appelé 'ArrayOfParams' avec les mêmes types de paramètre	TestExtension
+
+    public static int ConfusingSignature(this string S, int i, int j, params object[] parameters)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 5;
+    }
 
 
     public static int ArrayOfParams(this string S, int i)
@@ -160,25 +172,13 @@ using System.Reflection;
         return 3;
     }
 
-    /*
+
     public static int ArrayOfParams(this string S, int i, int j, int k=10)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 4;
     }
-    */
 
-     //Note : appel possible ArrayOfParams('S',1,2) parameters est un tableau vide
-     // Déclare le cas {$_ -gt NbArgs }
-     // todo ? Déclare le cas {$_ -gt NbArgs } et {$_ -eq NbArgs }
-    //CS0111	Le type 'ParamsKeyWord' définit déjà un membre appelé 'ArrayOfParams' avec les mêmes types de paramètre	TestExtension
-/*
-    public static int ArrayOfParams(this string S, int i, int j, params object[] parameters)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 5;
-    }
-*/
 
     public static int ArrayOfParams(this string S, int i, int j=5, params object[] parameters)
     {
