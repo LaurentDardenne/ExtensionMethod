@@ -1,18 +1,22 @@
 ﻿# ExtensionMethod
+
 Creation of ps1xml file dedicated to the extension methods contained in an assembly.
 From an idea of [Bart De Smet's](http://bartdesmet.net/blogs/bart/archive/2007/09/06/extension-methods-in-windows-powershell.aspx)
 
 To install this module :
 ```Powershell
+
 $PSGalleryPublishUri = 'https://www.myget.org/F/ottomatt/api/v2/package'
 $PSGallerySourceUri = 'https://www.myget.org/F/ottomatt/api/v2'
 
 Register-PSRepository -Name OttoMatt -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri #-InstallationPolicy Trusted
 Install-Module ExtensionMethod -Repository OttoMatt
 ```
-Note : This package install an unofficial version of the [UncommonSense.PowerShell.TypeData](https://github.com/jhoek/UncommonSense.PowerShell.TypeData) module.
+
+Note : this module depends on the [UncommonSense.PowerShell.TypeData](https://www.powershellgallery.com/packages/UncommonSense.PowerShell.TypeData) module, available on PSGallery.
 
 This code return all types containing extension methods :
+
 ```Powershell
  [psobject].Assembly.ExportedTypes|Find-ExtensionMethod -ExcludeGeneric|%  {$_.ToString()}
 
@@ -20,9 +24,11 @@ This code return all types containing extension methods :
 #Boolean HasTrait(System.Management.Automation.Language.TokenKind, System.Management.Automation.Language.TokenFlags)
 #System.String Text(System.Management.Automation.Language.TokenKind)
 ```
-By default Powershell can not use them, but with [ETS](https://msdn.microsoft.com/en-us/library/dd878306(v=vs.85).aspx) it is possible to make extension methods available.
+
+By default Powershell can not use them, but with [ETS](https://github.com/MicrosoftDocs/PowerShell-Docs/tree/main/reference/docs-conceptual/developer/ets) it is possible to make extension methods available.
 
 The goal is to adapt each method  :
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Types>
@@ -42,11 +48,15 @@ The goal is to adapt each method  :
         <Name>GetTrait</Name>
              ...
 ```
+
 Thus it is possible to write :
+
 ```Powershell
 $code.Ast.EndBlock.BlockKind.HasTrait('MemberName')
 ```
+
 The **New-ExtendedTypeData** function create one or many files from the extension methods contained in an assembly
+
 ```Powershell
 Add-Type -Path $AssemblyPath -Pass|
  New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml -All
@@ -55,11 +65,13 @@ WARNING: Excluded method : System.Boolean.ToString()
 WARNING: Excluded method : System.Object.ToString()
 WARNING: Excluded method : System.Char.ToString()
 ```
+
 **NOTE**:
 The ToString() method can be generate recursiv call, they are excluded.
 The generic methods and those returning a type Interface are excluded.
 
 The _-All_ parameter group all definitions to a single file :
+
 ```Powershell
 dir  -Path c:\temp\TestPs1Xml
 
@@ -69,7 +81,9 @@ Mode                LastWriteTime         Length Name
 ----                -------------         ------ ----
 -a----       16/02/2017     12:57         269651 All.ps1xml
 ```
+
 The absence of the _-All_ parameter creates a file by type, the filename is the name of the corresponding type :
+
 ```Powershell
 Add-Type -Path $AssemblyPath -Pass|
  New-ExtendedTypeData -Path c:\temp\TestPs1Xml\All.ps1xml
