@@ -83,9 +83,9 @@ function AddMembers{
   {
     $Count++
     if ($isContainsParams -eq $false)
-    { 
+    {
       #todo see https://github.com/PowerShell/PowerShell/blob/4f57804f468c5ad47001708014d8989eac3043bc/src/System.Management.Automation/engine/CoreAdapter.cs#L2203
-      $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0 
+      $isContainsParams=$CurrentParameter.GetCustomAttributes([System.ParamArrayAttribute],$false).Count -gt 0
     }
     if ($CurrentParameter.isOptional)
     { $CountOptional++ }
@@ -199,7 +199,7 @@ param(
          [void]$hash.$Property.Add($Object)
       }
       else
-      {  
+      {
           #There is only one occurrence of a key
           #We replace it if it exists.
          $hash.$Property = $Object
@@ -337,6 +337,7 @@ begin {
       #Si le cas ($Max-2) Args.Count n'existe pas
       $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{1}..(`$args.count-1)]))" -f "$Arguments",($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
+      $ScriptBuilder.AppendLine('                   Break') >$null
       $ScriptBuilder.AppendLine('                }') >$null
     }
   # See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
@@ -447,7 +448,7 @@ begin {
                 $Script.Append("$arguments") >$null
             }
             #close method call
-            $Script.Append(") }`r`n`r`n") >$null
+            $Script.Append(") ; Break }`r`n`r`n") >$null
         }
         AddSwitchClauseForMethodWithParams -ScriptBuilder $Script -MaxSignatureWithParamsKeyWord $MaxSignatureWithParams
 
@@ -568,7 +569,7 @@ function New-ExtendedTypeData {
  [CmdletBinding(DefaultParameterSetName="Path",SupportsShouldProcess = $true)]
  param(
     #Type to analyze.
-    # If type is of type string then Powershell attempts a conversion, 
+    # If type is of type string then Powershell attempts a conversion,
     # square brackets are not accepted in the type name. Use 'MyType' instead of [MyType].
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
