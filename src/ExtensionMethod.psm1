@@ -341,10 +341,6 @@ begin {
       $ScriptBuilder.AppendLine('                }') >$null
     }
   # See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
-  #           https://stackoverflow.com/questions/23660137/c-sharp-reflective-method-invocation-with-arbitrary-number-of-parameters?noredirect=1&lq=1
-  #           https://stackoverflow.com/questions/22235490/methodinfo-invoke-throws-exception-for-variable-number-of-arguments?noredirect=1&lq=1
-  #           https://stackoverflow.com/questions/16777547/invoke-a-method-using-reflection-with-the-params-keyword-without-arguments?noredirect=1&lq=1
-  #
   #           https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
   }
 }#begin
@@ -469,14 +465,10 @@ begin {
 
 <#
 todo scénario de construction -> on doit ajouter des cas dans le switch selon la déclaration de méthode
- traite celles sans option ni params
- traite celles avec option ni params
- traite celles sans option et avec params
- traite celles avec option et avec params ->Error : PS ne gére pas le cas où l'optionnel est absent et params 'vide'
 
-
-    public static string Method1(this string S, bool includeBoundary=true){  # ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes
-                                                                             method1(1 arg)
+    public static string Method1(this string S, bool includeBoundary=true)
+    todo  ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes :
+          method1(1 arg)
 
     pour 2 param :
      existe-t-il une signature de méthode ayant 1 paramètre ?
@@ -487,21 +479,26 @@ todo scénario de construction -> on doit ajouter des cas dans le switch selon l
        non ajoute
 
     public static string Method2(this string S, int end)
-    public static string Method2(this string S, params object[] parameters){  # ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes
-                                                                             method1(1 arg)
-                                                                             method1(1 arg, 2 et >)
+    public static string Method2(this string S, params object[] parameters)
+    # Todo ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes
+           method1(1 arg)
+           method1(1 arg, 2 et >)
+
     public static string To(this string S, double end, bool includeBoundary){
 
-    public static string Method2(this string S, int end, params object[] parameters){  # todo ici le switch du premier dépend du nb de param des méthodes suivantes
+    public static string Method2(this string S, int end, params object[] parameters){
+     todo ici le switch du premier dépend du nb de param des méthodes suivantes
 
     public static string From(this string S){
-    public static string From(this string S, bool includeBoundary=true){ #ici sans l'optionnel, le compilo appel -> From(this string S)
-                                                                         #ici on n'ajoute pas de signature, car elle existe déjà dans la liste des méthodes
+    public static string From(this string S, bool includeBoundary=true)
+    Todo ici sans l'optionnel, le compilo appel -> From(this string S)
+    Todo ici on n'ajoute pas de signature, car elle existe déjà dans la liste des méthodes
 
     public static string From(this string S){
     public static string From(this string S, int end){
-    public static string From(this string S, bool includeBoundary=true){  #ici on n'ajoute pas la signature, car elle existe déjà
-                                                                          #todo c'est le type qui détermine la méthode appeler ?
+    public static string From(this string S, bool includeBoundary=true)
+    Todo ici on n'ajoute pas la signature, car elle existe déjà
+    Todo c'est le type qui détermine la méthode appeler ?
 
     public static string To(this string S){
     public static string To(this string S, bool includeBoundary=true){ #todo on doit ordonner le traitement des signatures

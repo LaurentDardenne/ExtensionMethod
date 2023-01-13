@@ -27,6 +27,7 @@ using System.Reflection;
     }
   }
 
+   //No optional no params
   public static class BasicTest
   {
 
@@ -44,6 +45,7 @@ using System.Reflection;
     }
   }
 
+  //With optional no params
   public static class Optionnal
   {
     public static int My(this string S){
@@ -72,6 +74,7 @@ using System.Reflection;
     }
    }
 
+   //No optional no params
    public static class OutParam
    {
     public static int MethodWithOutParam( this string S, out string str2m, ref string str3m)
@@ -99,6 +102,7 @@ using System.Reflection;
     }
    }
 
+   //With optional no params
    public static class DefaultWithVariousType
    {
     public static bool Func1(this string S, bool isvalid = true) {
@@ -137,7 +141,8 @@ using System.Reflection;
    }
 
 
-
+   //With optional and params
+   //No optional and with params
    public static class ParamsKeyWord
    {
 
@@ -231,4 +236,5 @@ using System.Reflection;
     }
   }
 "@
+
 $Assembly=Add-Type -TypeDefinition $source -Passthru
