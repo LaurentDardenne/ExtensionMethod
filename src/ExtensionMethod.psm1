@@ -382,8 +382,7 @@ begin {
    Write-Verbose "Type '$TypeName'"
 
    New-Type -Name $TypeName -Members {
-     #Todo pour un type  ETS: <Type>   <Name>System.String</Name>
-     # todo un même nom de méthode d'extension, ciblant le même type ETS, peut exister pour deux types.
+     # todo un même nom de méthode d'extension, ciblant le même nom de type ETS, peut exister pour deux types.
      # à l'origine un groupe pour toutes les methode de même nom
      # Désormais pour chaque type un groupe contenant toutes ses méthodes de même nom.
     foreach ($GroupMethod in $MethodsInfo| Group-Object DeclaringType,Name) #DeclaringType,
