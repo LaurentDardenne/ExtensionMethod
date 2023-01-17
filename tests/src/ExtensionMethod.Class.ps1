@@ -185,11 +185,16 @@ using System.Reflection;
         return 1;
     }
 
-    // TODO documenter le cas  ?
     public static int ArrayOfParams(this string S, params object[] parameters)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 2;
+    }
+    
+     // TODO ordre de déclaration importe-t-il dans la résolution d'appel ?
+    public static string ArrayOfParams(this string S, int end, object obj)
+    {
+      return "(this string S, int end, object obj)";
     }
 
     public static int ArrayOfParams(this string S, int i, int j)
