@@ -313,6 +313,13 @@ Function New-ExtensionMethodType{
  [System.Collections.DictionaryEntry] $Entry
  )
 begin {
+    #Contains all methods created
+    #ETS type name, method name, parameter number (case of the associated Switch() in the XML node), type names
+    #$h=@{};$h.'System.String'=@{};$h.'System.String'.'My'=@{};$h.'System.String'.'My'.2=@(DeclaringType)
+    #todo 'system.string' et 'string' possible ?
+    $MethodsCreated=@{}
+    $MethodsCreated > $null #todo pssa
+
    function AddAllParameters{
      param($Count)
     if ($Count -eq 0)
@@ -330,12 +337,11 @@ begin {
    }
 
   function AddSwitchClauseForMethodWithParams{
-    param($ScriptBuilder,$MaxSignatureWithParamsKeyWord)
+    param($ScriptBuilder,$MaxSignatureWithParamsKeyWord,$MaxSignatureWithoutParams)
 
     if ($null -ne $MaxSignatureWithParamsKeyWord)
     {
         #Add last signature with Params
-      $MaxSignatureWithoutParams=$SortedTemp|Where-Object {-not $_.isContainsParams} |Select-Object -first 1
       $Max=[Math]::Max($MaxSignatureWithoutParams.ParameterCount,$MaxSignatureWithParamsKeyWord.ParameterCount)
 
       $ScriptBuilder.Append( ("`t`t`t $(Get-ParameterComment -Method $MaxSignatureWithParamsKeyWord)")) >$null
@@ -380,14 +386,14 @@ begin {
    $TypeName=$Entry.Key
    $MethodsInfo=$Entry.Value
    Write-Verbose "Type '$TypeName'"
+   
+   $MethodsCreated.Add($TypeName,@{})
 
    New-Type -Name $TypeName -Members {
-     # todo un même nom de méthode d'extension, ciblant le même nom de type ETS, peut exister pour deux types.
-     # à l'origine un groupe pour toutes les methode de même nom
-     # Désormais pour chaque type un groupe contenant toutes ses méthodes de même nom.
-    foreach ($GroupMethod in $MethodsInfo| Group-Object DeclaringType,Name) #DeclaringType,
+     #Pour chaque type on a un groupe contenant toutes ses méthodes de même nom.
+    foreach ($GroupMethod in $MethodsInfo| Group-Object DeclaringType,Name)
     {
-      $MethodName=$GroupMethod.Name
+      $MethodName=$GroupMethod.Group[0].Name
       Write-Verbose "`tMethod '$MethodName'"
       if ( $MethodName -eq 'ToString')
       {
@@ -396,11 +402,9 @@ begin {
       }
       else
       {
-        $Script=New-Object System.Text.StringBuilder " switch (`$args.Count) {`r`n"
+        $MethodsCreated.$TypeName.Add($MethodName,@{})
 
-         #Contains the section numbers of the switch associated with a method.
-         #The section number is the number of parameters of each signature
-        $SwitchSections= [System.Collections.Generic.HashSet[String]]::new()
+        $Script=New-Object System.Text.StringBuilder " switch (`$args.Count) {`r`n"
 
           #Only one line is created for overloaded methods using the same number of parameters.
           #Example :
@@ -409,12 +413,16 @@ begin {
           #In this case their types are different, which is not a problem because PowerShell is untyped.
           #note: The parameter modifier 'ref' cannot be used with 'this' -> Compiler Error CS1101
 
-        $GroupMethodSignatures=$GroupMethod.Group |Group-Object ParameterCount -AsHashTable
-        Write-Verbose "`tGroup Parameter. Count='$($GroupMethodSignatures.Count)'"
-        #todo bug
+         #La hastable permet la recherche des cas à ajouter dans le switch
+        $MethodsByParameterCount=$GroupMethod.Group|Group-Object ParameterCount -AsHashTable
+        Write-Verbose "`tNumber of method signature to generate : '$($MethodsByParameterCount.Keys.Count)'"
+
         $SortedTemp=$GroupMethod.Group|Sort-Object -Property ParameterCount -Descending
         $MaxSignatureWithParams=$SortedTemp|Where-Object isContainsParams |Select-Object -first 1
-        foreach ($Method in $GroupMethodSignatures.GetEnumerator()|Sort-Object ParameterCount -Descending)
+        $MaxSignatureWithoutParams=$SortedTemp|Where-Object {-not $_.isContainsParams} |Select-Object -first 1
+        $SortedTemp=$null
+
+        Foreach ($Method in $MethodsByParameterCount.GetEnumerator()|Sort-Object ParameterCount)
         {
             Write-Verbose "`tSignature $($Method.Value[0].ToString())"
             # Le group de methodes, ayant le même nombre de paramètre, contient-il une méthode avec au moins un paramètre optionel ?
@@ -430,7 +438,7 @@ begin {
               { continue }
             }
             [int]$ParameterCount=$Method.Key
-            $SwitchSections.Add($ParameterCount)>$null
+
                 #We subtract 1 from $ParameterCount to create an offset:
                 #    0=$this                    -> $Objet.Method()                 -> [Type]::Method($this)
                 #    1=$this,$args[0]           -> $Objet.Method($Param1)          -> [Type]::Method($this,$args[0])
@@ -446,14 +454,18 @@ begin {
                 #
                 #Note: If a parameter is ByRef, the caller declares it [ref] on the variable used and PS propagates it to the extension method
 
-             #switch clause for ($ParameterCount-1) $Args
+             #Gets the class that declares this member.
+            $DeclaringType=$Method.Value[0].Declaringtype
+
+              #TODO si existe déjà ?
+            $MethodsCreated.$TypeName.$MethodName.Add($ParameterCount,[System.Collections.ArrayList]::new($Declaringtype))
+
+             #Add all method signatures with the same number of parameters
             foreach ( $MethodToComment in $Method.Value)
-            {
-               #Add all method signatures with the same number of parameters
-              $Script.Append( ("`t`t`t $(Get-ParameterComment -Method $MethodToComment)")) >$null
-            }
-            Write-Verbose "Add script line $("`t`t {0} {{ [{1}]::{2}(`$this" -F ($ParameterCount-1), $MethodToComment.Declaringtype,$MethodName))'"
-            $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($ParameterCount-1), $MethodToComment.Declaringtype,$MethodName)) >$null
+            { $Script.Append( ("`t`t`t $(Get-ParameterComment -Method $MethodToComment)")) >$null }
+            
+            Write-Verbose "Add script line $("`t`t {0} {{ [{1}]::{2}(`$this" -F ($ParameterCount-1), $DeclaringType,$MethodName))'"
+            $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($ParameterCount-1), $DeclaringType,$MethodName)) >$null
             if ($ParameterCount -gt 1)
             {
                 $ofs=''
@@ -466,23 +478,29 @@ begin {
              #Si au moins 1 optionel ajouter s'il n'en existe pas déjà une, une signature avec Parameter.count-1
             if ($isGroupMethodContainsOptionnalParameter)
             {
-               $Method|Export-clixml 'c:\temp\datas.ps1xml'
-               #todo $Method Int32 My(System.String, Int32)
-               #todo contient des entrées ayant le même nom de méthode et de paramètre
-               #todo au moins une des param optionel ? Laquel en a le plus, max ?
-               Write-verbose "Count optional '$($Method.Value[0].CountOptional)'"
-               #On ajoute un cas de switch pour chaque paramètre optionnel
-               1..$Method.Value.CountOptional|
+                #On ajoute un cas de switch pour chaque paramètre optionnel qu'une méthode déclare.
+                #Pour la déclaration de methode suivante  : public static string M(this string S, bool includeBoundary=true)
+                # le sytem de réflection ne renvoie qu'une seule signature, mais deux appels sont possibles : M("Test") et M("Test",$true)
+                #On doit donc générer les signatures manquantes, ici M("Test")
+
+               $Method|Export-clixml 'c:\temp\datas.ps1xml' #todo
+                #Recherche dans les méthodes celle ayant le plus grand nombre de paramètres optionels
+               $Max=[Linq.Enumerable]::Max([Int[]]$Method.Value.CountOptional)
+               Write-verbose "Max count optional '$Max'"
+    
+               1..$Max|
                 ForEach-Object {
                     $CurrentCase=$_
                     $SwitchCase=$ParameterCount-$CurrentCase
                     Write-Verbose "switch case =$SwitchCase ParameterCount=$ParameterCount CountOptional =$($Method.Value.CountOptional)"
                     #todo si 1 param optionnel -> 0
-                     #si la signature n'existe pas déjà on complète les cas du switch
-                    if ($GroupMethodSignatures.ContainsKey($SwitchCase) -eq $false)
+                     #Si la signature n'existe pas dans les signatures d'origine et qu'elle n'existe pas déjà dans celles déjà créées
+                     # alors on complète les cas du switch pour les signatures ayant un ou plusieurs paramètres optionnels.
+                    if ( ($MethodsByParameterCount.ContainsKey($SwitchCase) -eq $false) -and ($MethodsCreated.$TypeName.$MethodName.ContainsKey($SwitchCase)) )
                     {
-                      Write-verbose " GroupMethodSignatures not ContainsKey $SwitchCase"
-                      $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($SwitchCase-1), $MethodToComment.Declaringtype,$MethodName)) >$null
+                      Write-verbose " MethodByParameterCount AND MethodsCreated do not contains the key '$SwitchCase'"
+                      $MethodsCreated.$TypeName.$MethodName.Add($SwitchCase,[System.Collections.ArrayList]::new($Declaringtype))
+                      $Script.Append( ("`t`t {0} {{ [{1}]::{2}(`$this" -F ($SwitchCase-1), $Declaringtype,$MethodName)) >$null
                       if ($ParameterCount -gt 1)
                       {
                           $ofs=''
@@ -495,12 +513,12 @@ begin {
         
                     }
                     else 
-                    { Write-verbose " GroupMethodSignatures  ContainsKey $SwitchCase" }
+                    {Write-verbsose " GroupMethodByParameterCount  ContainsKey $SwitchCase" }
                 }
             }
         }
         Write-Verbose "call addswitch"
-        AddSwitchClauseForMethodWithParams -ScriptBuilder $Script -MaxSignatureWithParamsKeyWord $MaxSignatureWithParams
+        AddSwitchClauseForMethodWithParams -ScriptBuilder $Script -MaxSignatureWithParamsKeyWord $MaxSignatureWithParams -MaxSignatureWithoutParams $MaxSignatureWithoutParams
 
          #Add default switch clause
         $Script.Appendline( ("`t`t default {{ throw `"No overload for '{0}' takes the specified number of parameters.`" }}" -F $MethodName) ) >$null
@@ -512,7 +530,7 @@ begin {
         Write-debug "`tscript: $Script"
         New-ScriptMethod -Name $MethodName -Script $Script
       }
-     }
+    }
    }
  }
 }
