@@ -60,6 +60,8 @@ using System.Reflection;
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 3;
     }
+    // deux paramètre mais un est optionnel, les deux précédents ont deux param mais de type différents
+    // todo public static int My(this string S, bool includeBoundary=true)
 
      //https://stackoverflow.com/questions/37894416/why-does-c-sharp-allow-ambiguous-function-calls-through-optional-arguments
      //
@@ -73,6 +75,25 @@ using System.Reflection;
         return 4;
     }
    }
+
+   //With optional no params
+   public static class BasicTest2
+   {
+     public static string Method1(this string S, bool includeBoundary=true)
+     {
+        return "Method1 (this string S, bool includeBoundary=true)";
+     }
+ 
+     public static string Method1(this string S, bool includeBoundary=true,int Boundary=10)
+     {
+        return "Method1 (this string S, bool includeBoundary=true,int Boundary=10)";
+     }
+ 
+     public static string Method1(this string S, bool includeBoundary=true,int Boundary=10,string text="test")
+     {
+        return "Method1 (this string S, bool includeBoundary=true,int Boundary=10,string text='test')";
+     }
+   }    
 
    //No optional no params
    public static class OutParam
