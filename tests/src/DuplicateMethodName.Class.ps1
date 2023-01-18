@@ -1,8 +1,13 @@
-    $source = @"
+$source = @"
 using System;
 
   public static class DuplicateMethodName1
   {
+    public static string Method1(this string S)
+    {
+      return "(this string S)";
+    }
+
     public static string Method1(this int end,string S)
     {
       return "(this int end,string S)";
@@ -21,6 +26,11 @@ using System;
     public static string Method1(this string S, bool includeBoundary=true,int Boundary=10)
     {
         return "Method1 (this string S, bool includeBoundary=true,int Boundary=10)";
+    }
+
+    public static string Method1(this string S, double Sum, int Boundary=10)
+    {
+      return "(this string S, double Sum, int Boundary=10)";
     }
 
     public static string Method1(this string S, object Obj, int Boundary)
