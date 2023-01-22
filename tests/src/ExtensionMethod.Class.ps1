@@ -83,17 +83,17 @@ using System.Reflection;
      {
         return "Method1 (this string S, bool includeBoundary=true)";
      }
- 
+
      public static string Method1(this string S, bool includeBoundary=true,int Boundary=10)
      {
         return "Method1 (this string S, bool includeBoundary=true,int Boundary=10)";
      }
- 
+
      public static string Method1(this string S, bool includeBoundary=true,int Boundary=10,string text="test")
      {
         return "Method1 (this string S, bool includeBoundary=true,int Boundary=10,string text='test')";
      }
-   }    
+   }
 
    //No optional no params
    public static class OutParam
@@ -175,7 +175,7 @@ using System.Reflection;
     public static int ConfusingSignature(this string S, int i, int j, params object[] parameters)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 5;
+        return 0;
     }
 
 
@@ -190,31 +190,32 @@ using System.Reflection;
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 2;
     }
-    
+
      // TODO ordre de déclaration importe-t-il dans la résolution d'appel ?
     public static string ArrayOfParams(this string S, int end, object obj)
     {
-      return "(this string S, int end, object obj)";
-    }
-
-    public static int ArrayOfParams(this string S, int i, int j)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        Helper.WriteSignature(this string S, int end, object obj)";
         return 3;
     }
 
-
-    public static int ArrayOfParams(this string S, int i, int j, int k=10)
+    public static int ArrayOfParams(this string S, int i, int j)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 4;
     }
 
 
-    public static int ArrayOfParams(this string S, int i, int j=5, params object[] parameters)
+    public static int ArrayOfParams(this string S, int i, int j, int k=10)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 5;
+    }
+
+
+    public static int ArrayOfParams(this string S, int i, int j=5, params object[] parameters)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 6;
     }
    }
 
