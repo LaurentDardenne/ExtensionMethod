@@ -15,12 +15,16 @@ using System;
   {
     public static string ArrayOfParams(this string S, int i)
     {
-        return "(this string S, int i)";
+      Console.WriteLine(string.Format("i='{0}'",i)); 
+      return "(this string S, int i)";
     }
 
     public static string ArrayOfParams(this string S, int i, params object[] parameters)
     {
-        return "(this string S, int i, params object[] parameters)";
+       Console.WriteLine(string.Format("i='{0}'",i));
+       Console.WriteLine("parameters :");
+       Array.ForEach(parameters, Console.WriteLine);
+       return "(this string S, int i, params object[] parameters)";
     }
 
      // A method declaring an optional parameter AND a params is possible.
@@ -30,10 +34,13 @@ using System;
      // https://msdn.microsoft.com/en-us/library/ms182135.aspx
      // CA1026: Default parameters should not be used
      //https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1026-default-parameters-should-not-be-used?view=vs-2017
-
     public static string ArrayOfParams(this string S, int i, int j=10, params object[] parameters)
     {
-        return "(this string S, int i, int j=10, params object[] parameters)";
+       Console.WriteLine(string.Format("i='{0}'",i));
+       Console.WriteLine(string.Format("j='{0}'",j));
+       Console.WriteLine("parameters :");
+       Array.ForEach(parameters, Console.WriteLine);
+       return "(this string S, int i, int j=10, params object[] parameters)";
     }
   }
 "@
@@ -44,13 +51,17 @@ Add-Type -TypeDefinition $source
 Update-TypeData -PrependPath c:\temp\All.ps1xml
 
 's'.ArrayOfParams(1,2)
-#Exception lors de l'appel de «ArrayOfParams» avec «2» argument(s): «L'index se trouve en dehors des limites du tableau.»
+# !!!!!!! Exception lors de l'appel de «ArrayOfParams» avec «2» argument(s): «L'index se trouve en dehors des limites du tableau.»
 
 's'.ArrayOfParams(1,@(2))
 #(this string S, int i, params object[] parameters)
+
 's'.ArrayOfParams(1,5,@(2))
+# The value of the second argument is an integer (5)
 #(this string S, int i, int j=10, params object[] parameters)
+
 's'.ArrayOfParams(1,@(2),1)
+# The value of the second argument is an array,The Powershell runtime create an array of object
 #(this string S, int i, params object[] parameters)
 
 [Object[]]$Params=@('Test',1)
@@ -71,8 +82,9 @@ Update-TypeData -PrependPath c:\temp\All.ps1xml
 #(this string S, int i, params object[] parameters)
 
 [Object[]]$Params=@('Test',1,2)
-#[Object[]]$Params=@('Test',1,'Str')
-#[Object[]]$Params=@('Test',1,$null)
+#[Object[]]$Params=@('Test',1,'Str') --> ok
+#[Object[]]$Params=@('Test',1,$null)  --> ok
+#[Object[]]$Params=@('Test',1,[Type]::Missing)  --> ok
 [TestOptionalAndParams]::ArrayOfParams.Invoke($Params)
 # !!!!!!! Exception
 
