@@ -192,9 +192,9 @@ using System.Reflection;
     }
 
      // TODO ordre de déclaration importe-t-il dans la résolution d'appel ?
-    public static string ArrayOfParams(this string S, int end, object obj)
+    public static int ArrayOfParams(this string S, int end, object obj)
     {
-        Helper.WriteSignature(this string S, int end, object obj)";
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 3;
     }
 
