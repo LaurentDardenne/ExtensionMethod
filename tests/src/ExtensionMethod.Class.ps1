@@ -76,6 +76,8 @@ using System.Reflection;
     }
    }
 
+   //Support named arguments in .NET method invocation :  https://github.com/PowerShell/PowerShell/issues/13307
+
    //With optional no params
    public static class BasicTest2
    {
