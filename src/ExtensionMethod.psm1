@@ -346,6 +346,9 @@ begin {
       $ScriptBuilder.Append( ("`t`t`t $(Get-ParameterComment -Method $MaxSignatureWithParamsKeyWord)")) >$null
       $arguments=AddAllParameters -Count ($Max-1)
 
+      #todo si une seule méthode, pour une même signature, ET si elle contient 'params' alors -gt 0 ($Max-1) et sans le  switch  "1 : {}"
+      #todo  on a 0..n combinaisons
+
       $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{1}..(`$args.count-1)]))" -f "$Arguments",($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
       $ScriptBuilder.AppendLine('                   Break') >$null
