@@ -349,7 +349,7 @@ begin {
       #todo si une seule méthode, pour une même signature, ET si elle contient 'params' alors -gt 0 ($Max-1) et sans le  switch  "1 : {}"
       #todo  on a 0..n combinaisons
 
-      $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{1}..(`$args.count-1)]))" -f "$Arguments",($Max-2)) ) >$null
+      $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{2}..(`$args.count-1)]))" -f "$Arguments",($Max-1),($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
       $ScriptBuilder.AppendLine('                   Break') >$null
       $ScriptBuilder.AppendLine('                }') >$null
@@ -390,7 +390,7 @@ begin {
    $MethodsCreated.Add($TypeName,@{})
 
    New-Type -Name $TypeName -Members {
-     #todo  groupe par nom de méthode et puis par type si plusieurs entrées alors :
+     #todo groupe par nom de méthode et puis par type si plusieurs entrées alors :
      #todo Write-Warning "The creation of the element for the method '$MethodName' is duplicated for more types."
 
      #Pour chaque type on a un groupe contenant toutes ses méthodes de même nom.
@@ -417,12 +417,17 @@ begin {
           #In this case their types are different, which is not a problem because PowerShell is untyped.
           #note: The parameter modifier 'ref' cannot be used with 'this' -> Compiler Error CS1101
 
-         #La hastable permet la recherche des cas à ajouter dans le switch
+          #Une méthode ayant un ou plusieurs paramètres optionels nécessite d'ajouter des pseudo signatures.
+          #MethodsByParameterCount: hashtable permettant de rechercher les cas à ajouter dans le switch.
         $MethodsByParameterCount=$GroupMethod.Group|Group-Object ParameterCount -AsHashTable
         Write-Verbose "`tNumber of method signature to generate : '$($MethodsByParameterCount.Keys.Count)'"
         
+        
+        
         $SortedTemp=$GroupMethod.Group|Sort-Object -Property ParameterCount -Descending
+         #Renvoi la méthode ayant le plus de paramètre pour celles déclarant un paramètre 'params'
         $MaxSignatureWithParams=$SortedTemp|Where-Object isContainsParams |Select-Object -first 1
+         #Renvoi la méthode ayant le plus de paramètre pour celles ne déclarant pas de paramètre 'params'
         $MaxSignatureWithoutParams=$SortedTemp|Where-Object {-not $_.isContainsParams} |Select-Object -first 1
         Remove-Variable 'SortedTemp'
 
