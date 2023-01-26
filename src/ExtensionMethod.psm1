@@ -346,8 +346,39 @@ begin {
       $ScriptBuilder.Append( ("`t`t`t $(Get-ParameterComment -Method $MaxSignatureWithParamsKeyWord)")) >$null
       $arguments=AddAllParameters -Count ($Max-1)
 
+      #todo 1) pour : ArrayOfParams(this string S, params object[] parameters)
+      #todo un seul parametre de type params alors  {$_ -ge 1} { 
+      #todo  [Object[]]$Params=@($this , @($args[0..($args.count-1)]))
+      #
       #todo si une seule méthode, pour une même signature, ET si elle contient 'params' alors -gt 0 ($Max-1) et sans le  switch  "1 : {}"
       #todo  on a 0..n combinaisons
+
+      #Todo 2) pour ArrayOfParams([string] $S, [System.Object[]] $parameters)
+      #todo  si pour une même signature on a deux méthodes dont une avec  'params' on crée le swtich 1 et {$_ -gt 1}
+      #todo {$_ -gt 1} { [Object[]]$Params=@($this,@($args[0..($args.count-1)]))
+    <#
+      # ArrayOfParams([string] $S, [int] $i)
+			 # ArrayOfParams([string] $S, [System.Object[]] $parameters)
+		 1  { [TestOptionalAndParams2]::ArrayOfParams($this,$args[0]) ; Break }
+
+        # ArrayOfParams([string] $S, [System.Object[]] $parameters)
+     {$_ -gt 1} { [Object[]]$Params=@($this,@($args[0..($args.count-1)]))
+    #>
+<#
+todo scénario de construction -> on doit ajouter des cas dans le switch selon la déclaration de méthode
+
+    public static string Method2(this string S, int end)
+    public static string Method2(this string S, params object[] parameters)
+    # Todo ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes
+           method1(1 arg)
+           method1(1 arg, 2 et >)
+
+    public static string To(this string S, double end, bool includeBoundary){
+
+    public static string Method2(this string S, int end, params object[] parameters){
+     todo ici le switch du premier dépend du nb de param des méthodes suivantes
+#>
+
 
       $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{2}..(`$args.count-1)]))" -f "$Arguments",($Max-1),($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
@@ -547,22 +578,6 @@ begin {
    }
  }
 }
-
-<#
-todo scénario de construction -> on doit ajouter des cas dans le switch selon la déclaration de méthode
-
-    public static string Method2(this string S, int end)
-    public static string Method2(this string S, params object[] parameters)
-    # Todo ici on doit ajouter une signature qui n'existe pas dans la liste des méthodes
-           method1(1 arg)
-           method1(1 arg, 2 et >)
-
-    public static string To(this string S, double end, bool includeBoundary){
-
-    public static string Method2(this string S, int end, params object[] parameters){
-     todo ici le switch du premier dépend du nb de param des méthodes suivantes
-#>
-
 
 function New-ExtendedTypeData {
   [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseProcessBlockForPipelineCommand', '')]
