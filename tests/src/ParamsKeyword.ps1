@@ -5,11 +5,9 @@ using System;
   {
     public static string ArrayOfParams(this string S)
     {
-       Console.WriteLine("parameters :");
-       Array.ForEach(parameters, Console.WriteLine);
-       return "(this string S, params object[] parameters)";
+       return "(this string S)";
     }
-    
+
     public static string ArrayOfParams(this string S, int i)
     {
       Console.WriteLine(string.Format("i='{0}'",i)); 
@@ -81,7 +79,7 @@ using System;
     {
        Console.WriteLine("parameters :");
        Array.ForEach(parameters, Console.WriteLine);
-       return "(this string S, params object[] parameters)";
+       return "(this string S, ini i, params object[] parameters)";
     }    
   }  
 
@@ -98,14 +96,14 @@ using System;
     {
        Console.WriteLine("parameters :");
        Array.ForEach(parameters, Console.WriteLine);
-       return "(this string S, params object[] parameters)";
+       return "(this string S, int i, params object[] parameters)";
     }    
 
     public static string ArrayOfParams(this string S, int i, int j, params object[] parameters)
     {
        Console.WriteLine("parameters :");
        Array.ForEach(parameters, Console.WriteLine);
-       return "(this string S, params object[] parameters)";
+       return "(this string S, int i, int j, params object[] parameters)";
     }  
   }  
 "@
