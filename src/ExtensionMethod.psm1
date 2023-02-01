@@ -457,6 +457,7 @@ todo scénario de construction -> on doit ajouter des cas dans le switch selon l
         
         $SortedTemp=$GroupMethod.Group|Sort-Object -Property ParameterCount -Descending
          #Renvoi la méthode ayant le plus de paramètre pour celles déclarant un paramètre 'params'
+         #TODO si plusieurs méthodes avec params et nombre de paramètres différents ?
         $MaxSignatureWithParams=$SortedTemp|Where-Object isContainsParams |Select-Object -first 1
          #Renvoi la méthode ayant le plus de paramètre pour celles ne déclarant pas de paramètre 'params'
         $MaxSignatureWithoutParams=$SortedTemp|Where-Object {-not $_.isContainsParams} |Select-Object -first 1
