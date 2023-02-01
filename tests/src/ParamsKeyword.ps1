@@ -1,6 +1,22 @@
 $source = @"
 using System;
 
+  public static class TestOptionalAndParams0
+  {
+    public static string ArrayOfParams(this string S)
+    {
+       Console.WriteLine("parameters :");
+       Array.ForEach(parameters, Console.WriteLine);
+       return "(this string S, params object[] parameters)";
+    }
+    
+    public static string ArrayOfParams(this string S, int i)
+    {
+      Console.WriteLine(string.Format("i='{0}'",i)); 
+      return "(this string S, int i)";
+    }
+  }
+
   public static class TestOptionalAndParams1
   {
     public static string ArrayOfParams(this string S, params object[] parameters)
@@ -61,12 +77,36 @@ using System;
       return "(this string S, int i, int j)";
     }
 
-    public static string ArrayOfParams(this string S, params object[] parameters)
+    public static string ArrayOfParams(this string S, int i, params object[] parameters)
     {
        Console.WriteLine("parameters :");
        Array.ForEach(parameters, Console.WriteLine);
        return "(this string S, params object[] parameters)";
     }    
+  }  
+
+  public static class TestOptionalAndParams5
+  {
+    public static string ArrayOfParams(this string S, int i, int j)
+    {
+      Console.WriteLine(string.Format("i='{0}'",i)); 
+      Console.WriteLine(string.Format("j='{0}'",j)); 
+      return "(this string S, int i, int j)";
+    }
+
+    public static string ArrayOfParams(this string S, int i, params object[] parameters)
+    {
+       Console.WriteLine("parameters :");
+       Array.ForEach(parameters, Console.WriteLine);
+       return "(this string S, params object[] parameters)";
+    }    
+
+    public static string ArrayOfParams(this string S, int i, int j, params object[] parameters)
+    {
+       Console.WriteLine("parameters :");
+       Array.ForEach(parameters, Console.WriteLine);
+       return "(this string S, params object[] parameters)";
+    }  
   }  
 "@
 
