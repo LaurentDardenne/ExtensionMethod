@@ -1,0 +1,20 @@
+Update-TypeData c:\temp\All.ps1xml
+
+'Test'.method2(1,2,3)
+#AVERTISSEMENT : Count=3
+#AVERTISSEMENT : Method2([string] $S, [System.Object[]] $parameters)
+#	       ---> les arguments 2 et 3 sont transformé (par le code PS) en un tableau, Invoke appel donc la méthode avec 2 params
+#(this string S, int end, object obj)
+
+[Object[]]$Params=@('Test',1,2,3)
+[BasicTest2]::Method2.Invoke($Params)
+#(this string S, params object[] parameters)
+
+[Object[]]$Params=@('Test',1,@(2,3))
+[BasicTest2]::Method2.Invoke($Params)
+#(this string S, int end, object obj)
+
+'Test'.method2(1,@(2,3))
+#AVERTISSEMENT : Count=2
+#AVERTISSEMENT : Method2([string] $S, [int] $end, [System.Object] $obj)
+#(this string S, int end, object obj)
