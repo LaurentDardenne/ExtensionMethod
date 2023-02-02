@@ -318,6 +318,7 @@ begin {
     $MethodsCreated=@{}
 
    function AddAllParameters{
+    #build a string with ',$args[n]'
      param($Count)
     if ($Count -eq 0)
     { return }
@@ -334,6 +335,7 @@ begin {
    }
 
   function AddSwitchClauseForMethodWithParams{
+        #Build the body for a scriptblock associated to a ScriptMethod xml node
     param($ScriptBuilder,$MaxSignatureWithParamsKeyWord,$MaxSignatureWithoutParams)
 
     Write-Debug ("AddSwitchClauseForMethodWithParams without {0} with {1}" -f $MaxSignatureWithoutParams.ParameterCount,$MaxSignatureWithParamsKeyWord.ParameterCount)
@@ -420,9 +422,19 @@ todo scénario de construction -> on doit ajouter des cas dans le switch selon l
    
    $MethodsCreated.Add($TypeName,@{})
 
+    #todo fonction ou connaitre l'information de duplication en amont ?
+    #Regroupe par nom toutes les méthodes d'un type ETS 
+    $MethodsForOneEtsType=$MethodsInfo|Group-Object Name
+    foreach ($MethodByName in $MethodsForOneEtsType)
+    {
+       #Recherche les méthodes d'extensions déclarées dans plusieurs classe
+      if (($MethodByName.Group|Group-Object Declaringtype).Count -gt 1)
+      {
+        Write-Warning "For the ETS type name '$TypeName' the method '$($MethodByName.Name)' is defined in multiple classes. Please manually correct the generated XML file."
+      }
+    } 
+
    New-Type -Name $TypeName -Members {
-     #todo groupe par nom de méthode et puis par type si plusieurs entrées alors :
-     #todo Write-Warning "The creation of the element for the method '$MethodName' is duplicated for more types."
 
      #Pour chaque type on a un groupe contenant toutes ses méthodes de même nom.
     foreach ($GroupMethod in $MethodsInfo| Group-Object DeclaringType,Name)
