@@ -27,7 +27,12 @@ Pop-Location
 $Assembly|New-ExtendedTypeData -Path $EtsFileName -All -Force
 Update-TypeData -PrependPath $EtsFileName
 
-Describe 'Invoke ETS method provided by [BasicTest]' {
+Describe 'Invoke ETS method provided by [BasicTest]. No optional no params' {
+  
+  it "The method 'My' is provided by the [BasicTest] class" {  
+    $o=Get-TypeData 'System.String'
+    $o.Members.My.Script -match [regex]::Escape('[BasicTest]::My')|Should -be $true
+  }
 
   it 'Invoke My()' {
     'String'.My()|Should -be 1
