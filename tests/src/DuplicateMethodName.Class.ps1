@@ -1,3 +1,6 @@
+try {
+  [DuplicateMethodName1] > $null
+} catch {
 $source = @"
 using System;
 
@@ -79,17 +82,5 @@ using System;
   }  
 "@
 
-$Assembly=Add-Type -TypeDefinition $source  -PassThru
-# $VerbosePreference='continue'
-# #ipmo G:\ps\ExtensionMethod\Release\Extensionmethod\ExtensionMethod.psd1
-# ipmo  C:\Users\1801106\Documents\projets\ExtensionMethod\Release\Extensionmethod\ExtensionMethod.psd1
-# $O=$Assembly|New-ExtendedTypeData -Path c:\temp\All.ps1xml -All
-
-<#
-M(p)
- -> Colision !!!
-    Pour PS et/ou C#
-M(p,params)
-M(p,Object)
-
-#>
+Add-Type -TypeDefinition $source  -PassThru
+}

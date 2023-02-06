@@ -1,4 +1,9 @@
- #Extension classes
+#Extension classes
+try {
+    [DefaultWithVariousType] > $null
+    [DefaultWithVariousType].Assembly.ExportedTypes
+} catch {
+
 $source = @"
 using System;
 using System.Reflection;
@@ -48,20 +53,20 @@ using System.Reflection;
   //With optional no params
   public static class Optionnal
   {
-    public static int My(this string S){
+    public static int Other(this string S){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 1;
     }
-    public static int My(this string S, int end){
+    public static int Other(this string S, int end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 2;
     }
-    public static int My(this string S, string end){
+    public static int Other(this string S, string end){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 3;
     }
-    // deux paramètre mais un est optionnel, les deux précédents ont deux param mais de type différents
-    // todo public static int My(this string S, bool includeBoundary=true)
+    // deux paramètre mais un est optionnel, les deux précédents ont deux paramètres mais de type différents
+    // todo public static int Other(this string S, bool includeBoundary=true)
 
      //https://stackoverflow.com/questions/37894416/why-does-c-sharp-allow-ambiguous-function-calls-through-optional-arguments
      //
@@ -70,7 +75,7 @@ using System.Reflection;
      // which arguments were omitted in the call.
      // This is a consequence of a general preference in overload resolution for candidates that have fewer parameters."
 
-    public static int My(this string S, int end, bool includeBoundary=true){
+    public static int Other(this string S, int end, bool includeBoundary=true){
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         return 4;
     }
@@ -266,4 +271,5 @@ using System.Reflection;
   }
 "@
 
-$Assembly=Add-Type -TypeDefinition $source -Passthru
+Add-Type -TypeDefinition $source -Passthru
+}
