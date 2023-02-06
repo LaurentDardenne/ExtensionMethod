@@ -2,4 +2,5 @@
 Release/
 Logs/
 *.bak
-ExtensionMethod.tdl
+.vscode/extensions.json
+src/Todo debug scripts.zip
