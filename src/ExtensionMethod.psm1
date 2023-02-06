@@ -374,6 +374,22 @@ Régle de construction du switch :
   # See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
   #           https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
   }
+
+  function Test-UniquenessPerClass{
+    #Test for the existence of a method name in several classes
+    param($TypeName,$MethodsInfo)
+  
+     #Groups by name all the methods of an ETS type.
+    $MethodsForOneEtsType=$MethodsInfo|Group-Object Name
+    foreach ($MethodByName in $MethodsForOneEtsType)
+    {
+       #Find extension methods declared in several classes
+      if (($MethodByName.Group|Group-Object Declaringtype).Count -gt 1)
+      {
+        Write-Warning "For the ETS type name '$TypeName' the method '$($MethodByName.Name)' is defined in multiple classes. Please manually correct the generated XML file."
+      }
+    } 
+  }
 }#begin
 
 # For each type, we create as many <ScriptMethod> tags as methods listed.
@@ -411,17 +427,7 @@ Régle de construction du switch :
    
    $MethodsCreated.Add($TypeName,@{})
 
-    #todo fonction ou bien connaitre l'information de duplication en amont ?
-     #Groups by name all the methods of an ETS type.
-    $MethodsForOneEtsType=$MethodsInfo|Group-Object Name
-    foreach ($MethodByName in $MethodsForOneEtsType)
-    {
-       #Find extension methods declared in several classes
-      if (($MethodByName.Group|Group-Object Declaringtype).Count -gt 1)
-      {
-        Write-Warning "For the ETS type name '$TypeName' the method '$($MethodByName.Name)' is defined in multiple classes. Please manually correct the generated XML file."
-      }
-    } 
+   Test-UniquenessPerClass -Typename $Typename -MethodsInfo $MethodsInfo
 
    New-Type -Name $TypeName -Members {
 
