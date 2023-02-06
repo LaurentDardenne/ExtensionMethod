@@ -302,19 +302,31 @@ Function New-ExtensionMethodType{
  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions","",
                                                     Justification="New-ExtensionMethodType do not change the system state.")]
 
-#Returns one or more objects containing the definition of an ETS type declaring or or several members of type ScriptMethod
+#Returns one or more objects containing the definition of an ETS type declaring or or several members of type ScriptMethod.
+#Returns a string (XML) containing ETS member declarations.
  [CmdletBinding()]
  [OutputType([UncommonSense.PowerShell.TypeData.Type])]
  param(
     [ValidateNotNull()]
     [Parameter(Position=0, Mandatory=$true,ValueFromPipeline = $true)]
-   # DictionaryEntry containing extension methods of a class
- [System.Collections.DictionaryEntry] $Entry
+     # DictionaryEntry containing extension methods of a class
+   [System.Collections.DictionaryEntry] $Entry
  )
 begin {
-    #Contains all methods created
-    #ETS type name, method name, declaring type, parameter number (case of the associated Switch() in the XML node)
-    #$h=@{};$h.'System.String'=@{};$h.'System.String'.'My'=@{};$h.'System.String'.'MyMethod'.'ExtensionClassType'.SwitchParameterCount=$true
+  
+    #Contains all call cases for an extension method's signatures. The original ones and those added in the case of optional parameter
+    #Content of keys :
+    # 
+    # $MethodsCreated=@{}
+    #  ETS type name
+    #
+    # $MethodsCreated.'System.String'=@{}
+    #  ETS type name, method name
+    #
+    # $MethodsCreated.'System.String'.'MyMethod'=@{}
+    #  ETS type name, method name, declaring type, parameter number (case of the associated Switch() in the XML node)
+    #
+    # $MethodsCreated.'System.String'.'MyMethod'.'ExtensionClassType'.NumberOfTheSwitchCase=$true
     $MethodsCreated=@{}
 
    function AddAllParameters{
@@ -347,32 +359,12 @@ begin {
 
       $ScriptBuilder.Append( ("`t`t`t $(Get-ParameterComment -Method $MaxSignatureWithParamsKeyWord)")) >$null
       $arguments=AddAllParameters -Count ($Max-1)
-<#
-Todo doc
-Gestion particulière si pour une méthodes une de ses signature déclare 'params'.
- Dans le cas suivant, on doit ajouter une signature qui n'existe pas dans la liste des méthodes :
-    public static string Method2(this string S, int end)                     -> 1 paramètre
-    public static string Method2(this string S, params object[] parameters)  -> zéro ou 1 ou n paramètres.
-    Dans ce dernier cas si on appel la méthode avec un seul paramètre son type déterminera la signature à appeler.
-
-Régle de construction du switch :           
-  Si une seule signature avec 'params' alors on construit l'appel de $args[0] à $args[n] ET on ne déclare pas le switch simulé ( on déduit la signature)
-  Si pour deux signature dont une avec  'params' on crée le switch 1 et {$_ -gt 1}
-  Si plusieurs signatures avec 'params' alors on construit l'appel en débutant à $args[0] moins le nombre de paramètre, de la signature, déclarés avant la clause params $args[n].
-  exemple :
-    pour 2 paramètres -> ArrayOfParams(this string S, int i, params object[] parameters)
-          alors $args[0],1..($args.count-1)
-    pour 3 paramètres -> ArrayOfParams(this string S, int i, int j, params object[] parameters)
-          alors $args[0],$args[1],2..($args.count-1)
-#>        
 
       $ScriptBuilder.AppendLine(("`t`t {{`$_ -gt {1}}} {{ [Object[]]`$Params=@(`$this {0},@(`$args[{2}..(`$args.count-1)]))" -f "$Arguments",($Max-1),($Max-2)) ) >$null
       $ScriptBuilder.AppendLine(('                  [{0}]::{1}.Invoke($Params)' -f $MaxSignatureWithParamsKeyWord.Declaringtype,$MethodName) ) >$null
       $ScriptBuilder.AppendLine('                   Break') >$null
       $ScriptBuilder.AppendLine('                }') >$null
     }
-  # See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
-  #           https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
   }
 
   function Test-UniquenessPerClass{
@@ -391,30 +383,50 @@ Régle de construction du switch :
     } 
   }
 }#begin
+<#
+For each type, we create as many <ScriptMethod> tags as methods listed.
+As each method can be overloaded, we must consider the type of the overload,
+by the number of parameters and by their types:
 
-# For each type, we create as many <ScriptMethod> tags as methods listed.
-# As each method can be overloaded, we must consider the type of the overload,
-# by the number of parameters and by their types:
-#
-#  1- public static string To(this SubStringFrom subStringFrom)
-#  2- public static string To(this SubStringFrom subStringFrom, int end)
-#  3- public static string To(this SubStringFrom subStringFrom, string end)
-#  4- public static string To(this SubStringFrom subStringFrom, string end, bool includeBoundary)
-#
-# We test the number of parameters to generate the script tag that contains the PowerShell code:
-#         <Script>
-# 						switch ($args.Count) {
-#            			0 { [Developpez.Dotnet.StringExtensions]::To($this)}
-# 	 							1 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0])}
-# 	 							2 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0] ,$args[1])}
-# 	          default { throw "The 'To' method does not provide a signature containing $($args.Count) parameters." }
-#           }
-#         </Script>
-#
-# In this example, for $args.Count = 1 (we don't count $this) we must generate only one line,
-# let the shell invoke the method.
-# If the number of parameters match, but their type does not then the shell will raise an exception.
+ 1- public static string To(this SubStringFrom subStringFrom)
+ 2- public static string To(this SubStringFrom subStringFrom, int end)
+ 3- public static string To(this SubStringFrom subStringFrom, string end)
+ 4- public static string To(this SubStringFrom subStringFrom, string end, bool includeBoundary)
 
+We test the number of parameters to generate the script tag that contains the PowerShell code:
+        <Script>
+						switch ($args.Count) {
+           			0 { [Developpez.Dotnet.StringExtensions]::To($this)}
+	 							1 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0])}
+	 							2 { [Developpez.Dotnet.StringExtensions]::To($this,$args[0] ,$args[1])}
+	          default { throw "The 'To' method does not provide a signature containing $($args.Count) parameters." }
+          }
+        </Script>
+
+In this example, for $args.Count = 1 (we don't count $this) we must generate only one line,
+let the shell invoke the method.
+If the number of parameters match, but their type does not then the shell will raise an exception.
+
+
+See :     https://stackoverflow.com/questions/6484651/calling-a-function-using-reflection-that-has-a-params-parameter-methodbase
+          https://stackoverflow.com/questions/35404295/invoking-generic-method-with-params-parameter-through-reflection
+Todo doc
+Gestion particulière si pour une méthodes une de ses signature déclare 'params'.
+ Dans le cas suivant, on doit ajouter une signature qui n'existe pas dans la liste des méthodes :
+    public static string Method2(this string S, int end)                     -> 1 paramètre
+    public static string Method2(this string S, params object[] parameters)  -> zéro ou 1 ou n paramètres.
+    Dans ce dernier cas si on appel la méthode avec un seul paramètre son type déterminera la signature à appeler.
+
+Régle de construction du switch :           
+  Si une seule signature avec 'params' alors on construit l'appel de $args[0] à $args[n] ET on ne déclare pas le switch simulé ( on déduit la signature)
+  Si pour deux signature dont une avec  'params' on crée le switch 1 et {$_ -gt 1}
+  Si plusieurs signatures avec 'params' alors on construit l'appel en débutant à $args[0] moins le nombre de paramètre, de la signature, déclarés avant la clause params $args[n].
+  exemple :
+    pour 2 paramètres -> ArrayOfParams(this string S, int i, params object[] parameters)
+          alors $args[0],1..($args.count-1)
+    pour 3 paramètres -> ArrayOfParams(this string S, int i, int j, params object[] parameters)
+          alors $args[0],$args[1],2..($args.count-1)
+#>    
  process {
    
     #Name of the type of the first parameter of an extension method
@@ -473,7 +485,7 @@ Régle de construction du switch :
         {
             Write-Verbose "`tSignature '$($Method.Value[0].ToString())'"
              # Does the group of methods, having the same number of parameters, contain a method with at least one optional parameter?
-            #todo si optionnal et isContainsParams ?
+            #todo si optionnal et isContainsParams ? On construit l'appel mais on ajoute un warning ?
             $isGroupMethodContainsOptionnalParameter= $null -ne ($GroupMethod.Group|Where-Object {$_.CountOptional -ge 1} |Select-Object -first 1) 
             Write-Debug "`t Contains optionnal parameter ? $isGroupMethodContainsOptionnalParameter"
 
@@ -486,21 +498,22 @@ Régle de construction du switch :
                { continue }
             }
             [int]$ParameterCount=$Method.Key
+              <#
+                We subtract 1 from $ParameterCount to create an offset:
+                   0=$this                    -> $Objet.Method()                 -> [Type]::Method($this)
+                   1=$this,$args[0]           -> $Objet.Method($Param1)          -> [Type]::Method($this,$args[0])
+                   2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)  -> [Type]::Method($this,$args[0],$args[1])
+                
 
-                #We subtract 1 from $ParameterCount to create an offset:
-                #    0=$this                    -> $Objet.Method()                 -> [Type]::Method($this)
-                #    1=$this,$args[0]           -> $Objet.Method($Param1)          -> [Type]::Method($this,$args[0])
-                #    2=$this,$args[0],$args[1]  -> $Objet.Method($Param1,$Param2)  -> [Type]::Method($this,$args[0],$args[1])
-                #
-
-                # The lag on the number of parameters is due to the fact that one has to support
-                # the C# modifier 'this', which is equal to $this in a PowerShell method script, this
-                # is not specified when calling the PowerShell method.
-                #
-                #We build several lines respecting the call syntax of an extension method (static method):
-                # nb_argument { [TypeName]::MethodName($this, 0..n arguments) }
-                #
-                #Note: If a parameter is ByRef, the caller declares it [ref] on the variable used and PS propagates it to the extension method
+                The lag on the number of parameters is due to the fact that one has to support
+                the C# modifier 'this', which is equal to $this in a PowerShell method script, this
+                is not specified when calling the PowerShell method.
+                
+                We build several lines respecting the call syntax of an extension method (static method):
+                nb_argument { [TypeName]::MethodName($this, 0..n arguments) }
+                
+                Note: If a parameter is ByRef, the caller declares it [ref] on the variable used and PS propagates it to the extension method
+              #>
 
              #Gets the class that declares this member.
             $DeclaringType=$Method.Value[0].Declaringtype
