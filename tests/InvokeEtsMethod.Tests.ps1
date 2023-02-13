@@ -48,3 +48,111 @@ Describe 'Invoke ETS method provided by [BasicTest]. No optional no params' {
 
 }
 
+Describe 'Invoke ETS method provided by [Optionnal]. With optional no params' {
+
+  it "The method 'Other' is provided by the [Optional] class" {  
+    $o=Get-TypeData 'System.String'
+    $o.Members.Other.Script -match [regex]::Escape('[Optionnal]::Other')|Should -be $true
+  }
+
+  it 'Invoke Other()' {
+    'String'.Other()|Should -be 1  }
+
+  it 'Invoke Other(int)' {
+    # If two candidates are judged to be equally good, preference goes to a candidate that does not have optional parameters for
+    # which arguments were omitted in the call.
+    # This is a consequence of a general preference in overload resolution for candidates that have fewer parameters.
+
+    'String'.Other(10)|Should -be 2
+  }
+
+  it 'Invoke Other(String)' {
+    'String'.Other('test')|Should -be 3
+  }
+
+  it 'Invoke Other(int,bool)' {
+    'String'.Other(10,$false)|Should -be 4
+  }
+}
+
+Describe 'Invoke ETS method provided by [BasicTest2]. With optional no params' {
+
+    it "The method 'My' is provided by the [BasicTest2] class" {  
+      $o=Get-TypeData 'System.String'
+      $o.Members.Method1.Script -match [regex]::Escape('[BasicTest2]::Method1')|Should -be $true
+    }
+  
+    it 'Invoke Method1()' {
+      'String'.Method1()|Should -be 1
+    }
+  
+    it 'Invoke Method1(Bool)' {
+      # If two candidates are judged to be equally good, preference goes to a candidate that does not have optional parameters for
+      # which arguments were omitted in the call.
+      # This is a consequence of a general preference in overload resolution for candidates that have fewer parameters.
+  
+      'String'.Method1($false)|Should -be 1
+    }
+  
+    it 'Invoke Method1(Bool,int)' {
+      'String'.Method1($False,10)|Should -be 2
+    }
+  
+    it 'Invoke Method1(int,bool,string)' {
+      #todo connaitre la valeur du paramètre 'Text' $null ou valeur par défaut du C#
+      'String'.Method1($False,10,$null)|Should -be 3
+    }
+
+    it 'Invoke Method1(int,bool,string)' {
+      'String'.Method1($False,10,'Test')|Should -be 3
+    }    
+  }
+
+  Describe 'Invoke ETS method provided by [DefaultWithVariousType]. With optional no params' {
+
+    it "The method 'Func1' is provided by the [DefaultWithVariousType] class" {  
+      $o=Get-TypeData 'System.String'
+      $o.Members.Func1.Script -match [regex]::Escape('[DefaultWithVariousType]::Func1')|Should -be $true
+    }
+  
+    it 'Invoke Func1()' {
+      'String'.Func1()|Should -be $true
+    }
+
+    it 'Invoke Func2()' {
+      $flags=([Flags]::F1 -bor [Flags]::F2) -as [int]
+      $result='String'.Func2()
+      $result|Should -be $flags
+    }
+
+    it 'Invoke FColors()' {
+      $result='String'.FColors()
+      $result|Should -be 'Red'
+    }
+
+     #todo les trois cas semblent identique côté ETS
+    it 'Invoke MethodPtr()' {
+      $result='String'.MethodPtr()
+      $result|Should -not -be $null
+    }    
+
+    it 'Invoke MethodPtr2()' {
+      $result='String'.MethodPtr2()
+      $result|Should -be $null
+    }   
+
+    it 'Invoke MethodPtr3()' {
+      $result='String'.MethodPtr3()
+      $result|Should -be 0
+    }   
+    
+    it 'Invoke MethodDefault()' {
+      $result='String'.MethodDefault('format')
+      $result|Should -be 'C'
+    }  
+
+    it 'Invoke MethodPtr3()' {
+      $result='String'.DefaultStr('format')
+      $result|Should -be "Default value"
+    }  
+  }

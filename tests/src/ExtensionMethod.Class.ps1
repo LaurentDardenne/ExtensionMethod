@@ -86,19 +86,22 @@ using System.Reflection;
    //With optional no params
    public static class BasicTest2
    {
-     public static string Method1(this string S, bool includeBoundary=true)
+     public static int Method1(this string S, bool includeBoundary=true)
      {
-        return "Method1 (this string S, bool includeBoundary=true)";
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 1;
      }
 
-     public static string Method1(this string S, bool includeBoundary=true,int Boundary=10)
+     public static int Method1(this string S, bool includeBoundary=true,int Boundary=10)
      {
-        return "Method1 (this string S, bool includeBoundary=true,int Boundary=10)";
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 2;
      }
 
-     public static string Method1(this string S, bool includeBoundary=true,int Boundary=10,string text="test")
+     public static int Method1(this string S, bool includeBoundary=true,int Boundary=10,string text="test")
      {
-        return "Method1 (this string S, bool includeBoundary=true,int Boundary=10,string text='test')";
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 3;
      }
    }
 
@@ -145,26 +148,26 @@ using System.Reflection;
         return color;
     }
 
-    public static int MethodPtr(this string S, IntPtr arg = new IntPtr()) {
-        return 0;
+    public static IntPtr MethodPtr(this string S, IntPtr arg = new IntPtr()) {
+        return arg;
     }
 
-    public static int MethodPtr2(this string S, IntPtr? ptr = null) {
-        return 0;
+    public static IntPtr? MethodPtr2(this string S, IntPtr? ptr = null) {
+        return ptr;
     }
 
-    public static int MethodPtr3(this string S, IntPtr arg =  default(IntPtr)) {
-        return 0;
+    public static IntPtr MethodPtr3(this string S, IntPtr arg =  default(IntPtr)) {
+        return arg;
     }
 
-    public static string MethodDefault(this string S, string format, char mychar = 'C')
+    public static char MethodDefault(this string S, string format, char mychar = 'C')
     {
-        return string.Empty;
+        return mychar;
     }
 
     public static string DefaultStr(this string S, string format, string nullString = "Default value")
     {
-        return string.Empty;
+        return nullString;
     }
    }
 
