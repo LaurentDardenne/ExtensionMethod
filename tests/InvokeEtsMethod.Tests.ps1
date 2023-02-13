@@ -19,6 +19,35 @@ finally
 }
 #>
 
+
+<#
+TODO
+ajoute ces cas pour Params:
+    public static string Method2(this string S, int end)
+    {
+      return "(this string S, int end)";
+    }
+
+    public static string Method2(this string S, string end)
+    {
+      return "(this string S, string end)";
+    }
+
+    public static string Method2(this string S, params object[] parameters)
+    {
+      return "(this string S, params object[] parameters)";
+    }
+
+    //??
+    public static string Method2(this string S, int end, object obj)
+    {
+      return "(this string S, int end, object obj)";
+    }
+
+TODO
+vérifier si pour une méthode avec Params, $args peut contenir des tableaux et si la reconstruction de l'appel les considère tel quel.
+
+#>
 $EtsFileName="$Env:Temp\ExtensionMethodClass.ps1xml"
 Push-Location ".\src"
  $Assembly=.\ExtensionMethod.Class.ps1
@@ -56,7 +85,8 @@ Describe 'Invoke ETS method provided by [Optionnal]. With optional no params' {
   }
 
   it 'Invoke Other()' {
-    'String'.Other()|Should -be 1  }
+    'String'.Other()|Should -be 1
+  }
 
   it 'Invoke Other(int)' {
     # If two candidates are judged to be equally good, preference goes to a candidate that does not have optional parameters for
