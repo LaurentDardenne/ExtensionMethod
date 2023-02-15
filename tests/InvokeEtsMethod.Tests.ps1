@@ -107,7 +107,7 @@ Describe 'Invoke ETS method provided by [Optionnal]. With optional no params' {
 
 Describe 'Invoke ETS method provided by [BasicTest2]. With optional no params' {
 
-    it "The method 'My' is provided by the [BasicTest2] class" {  
+    it "The method 'Method1' is provided by the [BasicTest2] class" {  
       $o=Get-TypeData 'System.String'
       $o.Members.Method1.Script -match [regex]::Escape('[BasicTest2]::Method1')|Should -be $true
     }
@@ -229,11 +229,40 @@ Describe 'Invoke ETS method provided by [BasicTest2]. With optional no params' {
 }
 Describe 'Invoke ETS method provided by [ParamsKeyWord]. With optional no params' {
 
-  it "The method 'MethodWithOutParam' is provided by the [ParamsKeyWord] class" {  
+  it "The method 'ConfusingSignature' is provided by the [ParamsKeyWord] class" {  
     $o=Get-TypeData 'System.String'
-    $o.Members.MethodWithOutParam.Script -match [regex]::Escape('[ParamsKeyWord]::ConfusingSignature')|Should -be $true
+    $o.Members.ConfusingSignature.Script -match [regex]::Escape('[ParamsKeyWord]::ConfusingSignature')|Should -be $true
   }  
-  #todo
+  #todo bug de génération si + signatures dont au moins une avec params on considère le cas ou il n'y a pas de valeur pour params
+  it 'Invoke ConfusingSignature(int,int)' {
+    $result='String'.ConfusingSignature(8,9)
+    $result|Should -be 0
+  }     
+
+  it 'Invoke ArrayOfParams(int)' {
+    $result='String'.ArrayOfParams(9)
+    $result|Should -be 1
+  }     
+
+  it 'Invoke ArrayOfParams()' {
+    $result='String'.ArrayOfParams()
+    $result|Should -be 2
+  }   
+
+  it 'Invoke ArrayOfParams(@(1..4))' {
+    $result='String'.ArrayOfParams(@(1..4))
+    $result|Should -be 2
+  }     
+
+  it 'Invoke ArrayOfParams(1,@(2..4))' {
+    $result='String'.ArrayOfParams(1,@(2..4))
+    $result|Should -be 3
+  }     
+
+  it 'Invoke ArrayOfParams(int,int)' {
+    $result='String'.ArrayOfParams(8,9)
+    $result|Should -be 4
+  }    
 }
 
   <#
@@ -253,31 +282,6 @@ Describe 'Invoke ETS method provided by [ParamsKeyWord]. With optional no params
         return 0;
     }
 
-
-    public static int ArrayOfParams(this string S, int i)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 1;
-    }
-
-    public static int ArrayOfParams(this string S, params object[] parameters)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 2;
-    }
-
-     // TODO ordre de déclaration importe-t-il dans la résolution d'appel ?
-    public static int ArrayOfParams(this string S, int end, object obj)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 3;
-    }
-
-    public static int ArrayOfParams(this string S, int i, int j)
-    {
-        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
-        return 4;
-    }
 
 
     public static int ArrayOfParams(this string S, int i, int j, int k=10)

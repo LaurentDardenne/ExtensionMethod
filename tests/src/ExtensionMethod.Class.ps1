@@ -116,6 +116,14 @@ using System.Reflection;
         return 1;
     }
 
+    //TODO
+    /*
+    public static int MethodWithOutParam( this string S ,string str2m)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return -1;
+    }    
+    */
     public static int MethodWithOutParam( this string S ,out string str2m)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
