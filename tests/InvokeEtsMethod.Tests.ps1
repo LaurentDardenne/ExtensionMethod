@@ -186,3 +186,156 @@ Describe 'Invoke ETS method provided by [BasicTest2]. With optional no params' {
       $result|Should -be "Default value"
     }  
   }
+
+  
+  Describe 'Invoke ETS method provided by [OutParam]. With optional no params' {
+
+    it "The method 'MethodWithOutParam' is provided by the [OutParam] class" {  
+      $o=Get-TypeData 'System.String'
+      $o.Members.MethodWithOutParam.Script -match [regex]::Escape('[OutParam]::MethodWithOutParam')|Should -be $true
+    }  
+
+    it 'Invoke MethodWithOutParam(out,ref)' {
+      [ref]$outParam=$null
+      [ref]$RefParam='Outer'
+
+      $result='String'.MethodWithOutParam($outParam,$RefParam)
+      $result|Should -be 1
+      $outParam.Value|Should -be 'set by method'
+      $RefParam.Value|Should -be 'Inner'
+    }   
+
+    it 'Invoke MethodWithOutParam(out)' {
+      [ref]$outParam=$null
+
+      $result='String'.MethodWithOutParam($outParam)
+      $outParam.Value|Should -be 'set by method'
+      $result|Should -be 2
+    }     
+
+    it 'Invoke MethodWithOutParam(ref)' {
+      <#
+      The in, ref, and out keywords are not considered part of the method signature for the purpose of overload resolution.
+      Therefore, methods cannot be overloaded if the only difference is that one method takes a ref or in argument and
+      the other takes an out argument.
+      #>
+      [ref]$RefParam='Outer'
+
+      $I=123
+      $result=$I.MethodWithOutParam($refParam)
+      $RefParam.Value|Should -be 'Inner'
+      $result|Should -be 3
+    }      
+}
+Describe 'Invoke ETS method provided by [ParamsKeyWord]. With optional no params' {
+
+  it "The method 'MethodWithOutParam' is provided by the [ParamsKeyWord] class" {  
+    $o=Get-TypeData 'System.String'
+    $o.Members.MethodWithOutParam.Script -match [regex]::Escape('[ParamsKeyWord]::ConfusingSignature')|Should -be $true
+  }  
+  #todo
+}
+
+  <#
+  //With optional and params
+   //No optional and with params
+   public static class ParamsKeyWord
+   {
+
+     //Note : appel possible ArrayOfParams('S',1,2) parameters est un tableau vide
+     // Déclare le cas {$_ -gt NbArgs }
+     // todo ? Déclare le cas {$_ -gt NbArgs } et {$_ -eq NbArgs }
+     //CS0111	Le type 'ParamsKeyWord' définit déjà un membre appelé 'ArrayOfParams' avec les mêmes types de paramètre	TestExtension
+
+    public static int ConfusingSignature(this string S, int i, int j, params object[] parameters)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 0;
+    }
+
+
+    public static int ArrayOfParams(this string S, int i)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 1;
+    }
+
+    public static int ArrayOfParams(this string S, params object[] parameters)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 2;
+    }
+
+     // TODO ordre de déclaration importe-t-il dans la résolution d'appel ?
+    public static int ArrayOfParams(this string S, int end, object obj)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 3;
+    }
+
+    public static int ArrayOfParams(this string S, int i, int j)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 4;
+    }
+
+
+    public static int ArrayOfParams(this string S, int i, int j, int k=10)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 5;
+    }
+
+
+    public static int ArrayOfParams(this string S, int i, int j=5, params object[] parameters)
+    {
+        Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        return 6;
+    }
+   }
+
+   public static class DefaultKeyWord
+   {
+    //PS v5.1 bug : https://github.com/dotnet/corefx/issues/12338
+    //PS Core ok.
+    public static string Foo1(this string S, DateTime dt = new DateTime())
+    {
+        return string.Empty;
+    }
+
+    public static string Foo2(this string S, DateTime dt = default(DateTime))
+    {
+        return string.Empty;
+    }
+
+    public static string Foo3(this string S,int? x = null)
+    {
+      return string.Empty;
+    }
+
+    public static int Add(this string S, int a = 3, int b = 5 )
+    {
+     return a + b;
+    }
+
+    //D for Double
+    public static double Add2(this string S, double a = 3.2D, double b = 5.235 )
+    {
+     return a + b;
+    }
+
+    //F for Float
+    // 'float' is alias for 'Single'
+    public static Single Add3(this string S, Single a = 123456789e4f, Single b =  1e12f )
+    {
+     return a + b;
+    }
+
+    //M for Decimal
+    public static decimal Add4(this string S, decimal a = 3.2M, decimal b = 5.235M )
+    {
+     return a + b;
+    }
+  }
+
+  #>

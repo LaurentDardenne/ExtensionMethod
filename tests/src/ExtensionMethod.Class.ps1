@@ -112,6 +112,7 @@ using System.Reflection;
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
         str2m="set by method";
+        str3m="Inner";
         return 1;
     }
 
@@ -129,6 +130,7 @@ using System.Reflection;
     public static int MethodWithOutParam( this int S, ref string str2m)
     {
         Helper.WriteSignature(MethodInfo.GetCurrentMethod());
+        str2m="Inner";
         return 3;
     }
    }
